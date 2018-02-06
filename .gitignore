@@ -1,0 +1,10 @@
+*.wav
+textures/*
+shaders/*
+Release/*
+Debug/*
+lib/*
+include/*
+Maze Game.vcxproj.user
+Maze Game.vcxproj.filters
+Maze Game.vcxproj
