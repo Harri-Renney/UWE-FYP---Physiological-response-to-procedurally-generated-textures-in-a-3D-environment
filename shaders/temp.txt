@@ -1,0 +1,74 @@
+#version 330 core
+
+out vec4 marbleColor;
+
+in vec3 aPos;
+
+const vec3 tileSize = vec3(1.1, 1.0, 1.1);
+const vec3 tilePct = vec3(0.98, 1.0, 0.98);
+
+uniform float time;
+
+float noise(vec3 co){
+    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
+}
+
+vec3 marble_color(float x)
+{
+   vec3 col;
+    x = 0.5*(x+1.);          // transform -1<x<1 to 0<x<1
+    x = sqrt(x);             // make x fall of rapidly...
+    x = sqrt(x);
+    x = sqrt(x);
+    col = vec3(.2 + .75*x);  // scale x from 0<x<1 to 0.2<x<0.95
+    col.b*=0.95;             // slightly reduce blue component (make color "warmer"):
+    return col;
+}
+
+float turbulence (vec3 P, int numFreq)
+{
+      float val = 0.0;
+      float freq = 1.0;
+      for (int i = 0; i < numFreq; i++) {
+         val += abs (noise (P * freq) / freq);
+         freq *= 2.07;
+      }
+    return val;
+}
+
+
+///////////////////////////////////////////////////
+
+#version 330 core
+//precision highp float;
+
+out vec4 marbleColor;
+in vec2 TexCoord;
+
+const vec3 tileSize = vec3(1.1,1.0, 1.1);
+const vec3 tilePct = vec3(0.98,1.0, 0.98);
+
+vec3 marble_color(float x)
+{
+  return vec3 (0.5 * x + 0.5);
+}
+
+void main ()
+{
+  float t = 6.28 * TexCoord.x / tileSize.x ;
+  // replicate over rows of tiles:
+  t = sin(t);
+  marbleColor = vec4(marble_color(t), 1.0);
+}
+
+void main()
+{
+   float amplitude = 8.0;
+   const int roughness = 4;     // noisiness of veins (#octaves in turbulence)
+
+   float t = 6.28 * aPos.x / tileSize.x ;
+   //t += amplitude * turbulence (aPos.xyz, roughness);
+   // replicate over rows of tiles (wont be identical, because noise is depending on all coordinates of the input vector):
+   t = sin(t);
+   marbleColor = vec4(marble_color(t), 1.0);
+}

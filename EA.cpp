@@ -1,4 +1,4 @@
-#include "gsr.h"
+#include "EA.h"
 
 boolean setupSerial(char* comPort, SerialConnection *sc)
 {
@@ -42,21 +42,41 @@ void closeSerial(SerialConnection sc)
 
 //Need to use tera term first for some reason. Send activate byte?
 char SerialBuffer[10000];//Buffer for storing Rxed Data
-void printGSR(SerialConnection sc)
+void printEA(SerialConnection sc)
 {
-	char tempChar; //Temporary character used for reading
+	char byte; //Temporary character used for reading
 	DWORD NoBytesRead;
 	int i = 0;
 	do
 	{
 		ReadFile(sc.hComm,           //Handle of the Serial port
-			&tempChar,       //Temporary character
-			sizeof(tempChar),//Size of TempChar
+			&byte,       //Temporary character
+			sizeof(byte),//Size of TempChar
 			&NoBytesRead,    //Number of bytes read
 			NULL);
 
-		SerialBuffer[i] = tempChar;// Store Tempchar into buffer
+		SerialBuffer[i] = byte;// Store Tempchar into buffer
 		i++;
 	} while (NoBytesRead > 0);
 	printf("%s", SerialBuffer);
+}
+
+char* getEA(SerialConnection sc)
+{
+	char sb[999];
+	char byte; //Temporary character used for reading
+	DWORD NoBytesRead;
+	int i = 0;
+	do
+	{
+		ReadFile(sc.hComm,           //Handle of the Serial port
+			&byte,       //Temporary character
+			sizeof(byte),//Size of TempChar
+			&NoBytesRead,    //Number of bytes read
+			NULL);
+
+		sb[i] = byte;// Store Tempchar into buffer
+		i++;
+	} while (NoBytesRead > 0);
+	return sb;
 }

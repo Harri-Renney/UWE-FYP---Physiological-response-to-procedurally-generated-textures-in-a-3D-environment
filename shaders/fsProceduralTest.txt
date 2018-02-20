@@ -1,0 +1,12 @@
+#version 330 core
+
+out vec4 marbleColor;
+
+in vec2 TexCoord;
+
+
+void main ()
+{
+	float c = sin(TexCoord.x  * 10) * TexCoord.y;
+	marbleColor = vec4(c, 0.0, c, 1.0);
+}

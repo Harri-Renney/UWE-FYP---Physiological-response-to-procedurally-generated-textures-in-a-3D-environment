@@ -1,0 +1,56 @@
+#version 330 core
+
+out vec4 colour;
+
+in vec2 TexCoord;
+
+#define REPETITION 128
+
+float sinWave(float x, float y)
+{
+	return sin(x*REPETITION + y*REPETITION);
+}
+
+float sinWave2(float x, float y)
+{
+	return sin(x*y*REPETITION);
+}
+
+float eggCarton(float x, float y)
+{
+	return sin(x*REPETITION) * sin(y*REPETITION);
+}
+
+float strange(float x, float y)
+{
+	return mod(1/x*y, 1.0);
+}
+
+float oneDPattern(float x)
+{
+	return (x - floor(x));
+}
+
+vec4 checkerBoard(float x, float y)
+{
+	vec4 colour;
+	float a = floor(x * REPETITION);
+	float b = floor(y * REPETITION);
+	if (mod(a+b, 2.0) > 0.5) {  // a+b is odd
+		colour = vec4(1.0, 0.5, 0.5, 1.0); // pink
+	}
+	else {  // a+b is even
+		colour = vec4(0.6, 0.6, 1.0, 1.0); // light blue
+	}
+	return colour;
+}
+
+void main ()
+{
+	vec4 c = checkerBoard(TexCoord.x, TexCoord.y);
+	//float t = strange(TexCoord.x, TexCoord.y);
+
+	//Output pixel
+	//colour = vec4(vec3(t, t, t), 1.0);
+	colour = vec4(c);
+}

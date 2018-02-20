@@ -1,0 +1,51 @@
+#version 330 core
+
+out vec4 brickColour;
+
+in vec2 TexCoord;
+
+void main ()
+{
+	const float BRICKWIDTH = 0.25;
+	const float BRICKHEIGHT = 0.08;
+	const float MORTARTHICKNESS = 0.01;
+
+	const float BMWIDTH = (BRICKWIDTH + MORTARTHICKNESS);
+	const float BMHEIGHT = (BRICKHEIGHT + MORTARTHICKNESS);
+	const float MWF = (MORTARTHICKNESS * 0.5 / BMWIDTH);
+	const float MHF = (MORTARTHICKNESS * 0.5 / BMHEIGHT);
+
+
+	const float ka = 1;
+	const float kd = 1;
+	const vec3 Cbrick = vec3(0.59, 0.09, 0.04);
+	const vec3 Cmortar = vec3(0.5, 0.5, 0.5);
+	
+	vec3 Ct;
+	//vec2 Nf;
+	float ss, tt, sbrick, tbrick, w, h;
+	float scoord = TexCoord.x;
+	float tcoord = TexCoord.y;
+	
+	//Nf = normalize(faceforward(N, I, 1);
+	
+	ss = scoord / BMWIDTH;
+	tt = tcoord / BMHEIGHT;
+	
+	if(mod(tt * 0.5, 1.0) > 0.5)
+	{
+		ss += 0.5;
+	}
+	
+	sbrick = floor(ss);
+	tbrick = floor(tt);
+	ss -= sbrick;
+	tt -= tbrick;
+	
+	w = step(MWF, ss) - step(1.0-MWF, ss);
+	h = step(MHF, tt) - step(1.0-MHF, tt);
+	
+	Ct = mix(Cmortar, Cbrick, w*h);
+	
+	brickColour = vec4(Ct, 1.0);
+}

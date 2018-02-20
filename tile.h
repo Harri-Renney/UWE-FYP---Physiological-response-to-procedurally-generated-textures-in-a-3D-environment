@@ -21,6 +21,7 @@ enum Panels {
 class Tile{
 public:
 	float vertices[180];
+	Tile();
 	Tile(int walls);
 private:
 };

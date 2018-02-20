@@ -10,9 +10,48 @@
 
 void whiteNoise(Texture texData);
 void latticeNoise(Texture texData);
+void turbulence(Texture texData);
 void fractalsum(Texture texData);
 void cloudTexture(Texture texData);
 void brickTexture(Texture texData);
+
+
+#define noiseWidth 128
+#define noiseHeight 128
+double noise[noiseHeight][noiseWidth];
+
+void generateNoise()
+{
+	for (int y = 0; y < noiseHeight; y++)
+		for (int x = 0; x < noiseWidth; x++)
+		{
+			noise[y][x] = (rand() % 32768) / 32768.0;
+		}
+}
+
+double smoothNoise(double x, double y)
+{
+	//get fractional part of x and y
+	double fractX = x - int(x);
+	double fractY = y - int(y);
+
+	//wrap around
+	int x1 = (int(x) + noiseWidth) % noiseWidth;
+	int y1 = (int(y) + noiseHeight) % noiseHeight;
+
+	//neighbor values
+	int x2 = (x1 + noiseWidth - 1) % noiseWidth;
+	int y2 = (y1 + noiseHeight - 1) % noiseHeight;
+
+	//smooth the noise with bilinear interpolation
+	double value = 0.0;
+	value += fractX     * fractY     * noise[y1][x1];
+	value += (1 - fractX) * fractY     * noise[y1][x2];
+	value += fractX     * (1 - fractY) * noise[y2][x1];
+	value += (1 - fractX) * (1 - fractY) * noise[y2][x2];
+
+	return value;
+}
 
 //Generates a 2D texture ready to image loaded into.
 int generate2DTexture()
@@ -94,6 +133,34 @@ void latticeNoise(Texture texData)
 			texData.data[i * texData.xElement + j] = latticeNoise;
 			texData.data[i * texData.xElement + ++j] = latticeNoise;
 			texData.data[i * texData.xElement + ++j] = latticeNoise;
+		}
+	}
+}
+
+int generateTurbulence(int xResolution, int yResolution)
+{
+	return generate2DTextureProcedural(turbulence, xResolution, yResolution);
+}
+void turbulence(Texture texData)
+{
+	generateNoise();
+	for (int i = 0; i != texData.yResolution; ++i)
+	{
+		for (int j = 0; j != texData.xElement; ++j)
+		{
+			double value = 0.0, initialSize = 64;
+			double size = initialSize;
+
+			while (size >= 1)
+			{
+				value += smoothNoise(j / size, i / size) * size;
+				size /= 2;
+			}
+
+			value = (128 * value) / initialSize;
+			texData.data[i * texData.xElement + j] = value;
+			texData.data[i * texData.xElement + ++j] = value;
+			texData.data[i * texData.xElement + ++j] = value;
 		}
 	}
 }

@@ -3,6 +3,9 @@
 float maxTexCoord = 1.0;
 const float minTexCoord = 0.0;
 
+Tile::Tile()
+{ }
+
 Tile::Tile(int walls)
 {
 	int vertexCounter = 0;

@@ -15,6 +15,7 @@ struct Texture {
 int generate2DTextureProcedural(void(*brickTexture)(Texture), int xResolution, int yResolution);
 int generateWhiteNoise(int xResolution, int yResolution);
 int generateLatticeNoise(int xResolution, int yResolution);
+int generateTurbulence(int xResolution, int yResolution);
 int generateFractalsum(int xResolution, int yResolution);
 int generateBrickTexture(int xResolution, int yResolution);
 int generateCloudTexture(int xResolution, int yResolution);

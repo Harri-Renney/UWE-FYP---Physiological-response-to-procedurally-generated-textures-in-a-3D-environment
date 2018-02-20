@@ -1,6 +1,5 @@
 *.wav
 textures/*
-shaders/*
 Release/*
 Debug/*
 lib/*

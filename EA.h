@@ -1,5 +1,5 @@
-#ifndef GSR_H
-#define GSR_H
+#ifndef EA_H
+#define EA_H
 
 #include <windows.h>
 #include <stdio.h>
@@ -13,6 +13,7 @@ struct SerialConnection{
 
 boolean setupSerial(char* comPort, SerialConnection *sc);
 void closeSerial(SerialConnection sc);
-void printGSR(SerialConnection sc);
+void printEA(SerialConnection sc);
+char* getEA(SerialConnection sc);
 
 #endif

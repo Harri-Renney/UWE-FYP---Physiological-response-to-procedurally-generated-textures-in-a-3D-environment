@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <time.h>
+#include <thread>
 
 //Extension wrangler (glad) opengl loading library + Window/Context creation (glfw) opengl library framework
 #include <glad/glad.h>
@@ -21,8 +22,11 @@
 #include "tile.h"
 #include "world.h"
 
-//GSR lib
-#include "gsr.h"
+//EA Lib
+#include "EA.h"
+
+//RL Lib
+#include "RL.h"
 
 //Texture Lib
 #define STB_IMAGE_IMPLEMENTATION	//Required for stb.
@@ -40,7 +44,7 @@ ISound* snd = SoundEngine->play2D("footsteps.wav", true, false, true);
 
 //World Variables//
 World world;
-Tile t = Tile(NORTH);
+Tile t;
 glm::vec2 currentPosition = glm::vec2(0, 0);
 int tileCounter = 0;
 
@@ -51,11 +55,15 @@ float lastY = SCREEN_HEIGHT / 2.0f;
 float deltaTime = 1.0f;
 float yaw = 0, pitch = 0, fov = 90;
 
+//RL//
+QLearningApprox rl(4, 0.2, 0.7);
+
 //Misc Variables//
 bool firstMouseMovement = true;
 float mixRate = 0;
 float control = 0;
 int success = true;
+clock_t countDown;
 
 //Window + Context//
 GLFWwindow* windowInit();
@@ -71,6 +79,13 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 static void cursor_position_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xOffset, double yOffset);
 void processInput(GLFWwindow* window);
+
+unsigned int textureThread;
+void generateNewTexture()
+{
+	Sleep(5000);
+	textureThread = generateLatticeNoise(200 + (rand() % 20), 200);
+}
 
 int main(int argc, char* argv[])
 {
@@ -131,7 +146,7 @@ int main(int argc, char* argv[])
 	//unsigned int texture2 = generate2DTexture("textures/creepy_texture.jpg");
 
 	//Create + compile vertex shader.
-	Shader shaderProgram("shaders/vsOriginal.txt", "shaders/fsOriginal.txt");
+	Shader shaderProgram("shaders/vsOriginal.txt", "shaders/fsMathFunctions.txt");
 	shaderProgram.use();	//Finding uniform location not require shader to be running but updating its value does.
 	////////////////////////////////
 
@@ -142,9 +157,10 @@ int main(int argc, char* argv[])
 	Shader shaderProgram4("shaders/vsOriginal.txt", "shaders/fsProceduralTimeFast.txt");
 
 	//unsigned int texture1 = generateBrickTexture(1920, 1080);
-	unsigned int texture1 = generateLatticeNoise(200, 200);
-	unsigned int texture2 = generateBrickTexture(200, 200);
-	unsigned int texture3 = generateCloudTexture(200, 200);
+	unsigned int texture1 = generateTurbulence(128, 128);
+	//unsigned int texture1 = generateLatticeNoise(200, 200);
+	//unsigned int texture2 = generateBrickTexture(200, 200);
+	//unsigned int texture3 = generateCloudTexture(200, 200);
 	//shaderProgram.setInt("ourTexture01", 0);
 	//shaderProgram.setInt("ourTexture02", 1);
 
@@ -230,29 +246,32 @@ int main(int argc, char* argv[])
 		glBufferData(GL_ARRAY_BUFFER, sizeof(sky), sky, GL_STATIC_DRAW);
 		glDrawArrays(GL_TRIANGLES, 0, sizeof(sky) / sizeof(float) / 5);*/
 
+		t = Tile(EAST | WEST | NORTH);
+		placeTile(t, glm::vec3(0.0, 0.0, 0.0), 1, &modelMatrix, VBO, shaderProgram, texture1, texture1, texture1);
+
 		t = Tile(EAST | WEST);
-		placeTile(t, glm::vec3(0.0, 0.0, -1.0), 7, &modelMatrix, VBO, shaderProgram, texture1, texture2, texture3);
+		placeTile(t, glm::vec3(0.0, 0.0, -1.0), 7, &modelMatrix, VBO, shaderProgram, texture1, texture1, texture1);
 
 		t = Tile(SOUTH | WEST);
-		placeTile(t, glm::vec3(0.0, 0.0, -1.0), 1, &modelMatrix, VBO, shaderProgram, texture1, texture2, texture3);
+		placeTile(t, glm::vec3(0.0, 0.0, -1.0), 1, &modelMatrix, VBO, shaderProgram, texture1, texture1, texture1);
 
 		t = Tile(NORTH | SOUTH);
-		placeTile(t, glm::vec3(1.0, 0.0, 0.0), 7, &modelMatrix, VBO, shaderProgram, texture1, texture2, texture3);
+		placeTile(t, glm::vec3(1.0, 0.0, 0.0), 7, &modelMatrix, VBO, shaderProgram, texture1, texture1, texture1);
 
 		t = Tile(NORTH | EAST);
-		placeTile(t, glm::vec3(1.0, 0.0, 0.0), 1, &modelMatrix, VBO, shaderProgram, texture1, texture2, texture3);
+		placeTile(t, glm::vec3(1.0, 0.0, 0.0), 1, &modelMatrix, VBO, shaderProgram, texture1, texture1, texture1);
 
 		t = Tile(WEST | EAST);
-		placeTile(t, glm::vec3(0.0, 0.0, -1.0), 2, &modelMatrix, VBO, shaderProgram, texture1, texture2, texture3);
+		placeTile(t, glm::vec3(0.0, 0.0, -1.0), 2, &modelMatrix, VBO, shaderProgram, texture1, texture1, texture1);
 
 		t = Tile(SOUTH);
-		placeTile(t, glm::vec3(0.0, 0.0, -1.0), 1, &modelMatrix, VBO, shaderProgram, texture1, texture2, texture3);
+		placeTile(t, glm::vec3(0.0, 0.0, -1.0), 1, &modelMatrix, VBO, shaderProgram, texture1, texture1, texture1);
 
 		t = Tile(NORTH | SOUTH);
-		placeTile(t, glm::vec3(-1.0, 0.0, 0.0), 5, &modelMatrix, VBO, shaderProgram, texture1, texture2, texture3);
+		placeTile(t, glm::vec3(-1.0, 0.0, 0.0), 5, &modelMatrix, VBO, shaderProgram, texture1, texture1, texture1);
 
 		t = Tile(NORTH | WEST | SOUTH);
-		placeTile(t, glm::vec3(-1.0, 0.0, 0.0), 1, &modelMatrix, VBO, shaderProgram, texture1, texture2, texture3);
+		placeTile(t, glm::vec3(-1.0, 0.0, 0.0), 1, &modelMatrix, VBO, shaderProgram, texture1, texture1, texture1);
 
 		modelMatrix = glm::translate(modelMatrix, glm::vec3(6.0f, 0.0f, 0.0f));
 		//For movements outside placeTile function need this.
@@ -260,16 +279,16 @@ int main(int argc, char* argv[])
 		world.grid[tileCounter].position = currentPosition;
 
 		t = Tile(NORTH | SOUTH);
-		placeTile(t, glm::vec3(1.0, 0.0, 0.0), 5, &modelMatrix, VBO, shaderProgram, texture1, texture2, texture3);
+		placeTile(t, glm::vec3(1.0, 0.0, 0.0), 5, &modelMatrix, VBO, shaderProgram, texture1, texture1, texture1);
 
 		t = Tile(EAST);
-		placeTile(t, glm::vec3(1.0, 0.0, 0.0), 1, &modelMatrix, VBO, shaderProgram, texture1, texture2, texture3);
+		placeTile(t, glm::vec3(1.0, 0.0, 0.0), 1, &modelMatrix, VBO, shaderProgram, texture1, texture1, texture1);
 
 		t = Tile(WEST | EAST);
-		placeTile(t, glm::vec3(0.0, 0.0, 1.0), 2, &modelMatrix, VBO, shaderProgram, texture1, texture2, texture3);
+		placeTile(t, glm::vec3(0.0, 0.0, 1.0), 2, &modelMatrix, VBO, shaderProgram, texture1, texture1, texture1);
 
 		t = Tile(WEST | EAST | NORTH);
-		placeTile(t, glm::vec3(0.0, 0.0, 1.0), 1, &modelMatrix, VBO, shaderProgram, texture1, texture2, texture3);
+		placeTile(t, glm::vec3(0.0, 0.0, 1.0), 1, &modelMatrix, VBO, shaderProgram, texture1, texture1, texture1);
 
 		modelMatrix = glm::translate(modelMatrix, glm::vec3(0.0f, 0.0f, -3.0f));
 		//For movements outside placeTile function need this.
@@ -277,31 +296,31 @@ int main(int argc, char* argv[])
 		world.grid[tileCounter].position = currentPosition;
 
 		t = Tile(WEST | EAST);
-		placeTile(t, glm::vec3(0.0, 0.0, -1.0), 3, &modelMatrix, VBO, shaderProgram, texture1, texture2, texture3);
+		placeTile(t, glm::vec3(0.0, 0.0, -1.0), 3, &modelMatrix, VBO, shaderProgram, texture1, texture1, texture1);
 
 		t = Tile(EAST | SOUTH);
-		placeTile(t, glm::vec3(0.0, 0.0, -1.0), 1, &modelMatrix, VBO, shaderProgram, texture1, texture2, texture3);
+		placeTile(t, glm::vec3(0.0, 0.0, -1.0), 1, &modelMatrix, VBO, shaderProgram, texture1, texture1, texture1);
 
 		t = Tile(NORTH | SOUTH);
-		placeTile(t, glm::vec3(-1.0, 0.0, 0.0), 10, &modelMatrix, VBO, shaderProgram2, texture1, texture2, texture3);
+		placeTile(t, glm::vec3(-1.0, 0.0, 0.0), 10, &modelMatrix, VBO, shaderProgram, texture1, texture1, texture1);
 
 		t = Tile(NORTH | WEST);
-		placeTile(t, glm::vec3(-1.0, 0.0, 0.0), 1, &modelMatrix, VBO, shaderProgram2, texture1, texture2, texture3);
+		placeTile(t, glm::vec3(-1.0, 0.0, 0.0), 1, &modelMatrix, VBO, shaderProgram, texture1, texture1, texture1);
 
 		t = Tile(EAST | WEST);
-		placeTile(t, glm::vec3(0.0, 0.0, -1.0), 2, &modelMatrix, VBO, shaderProgram2, texture1, texture2, texture3);
+		placeTile(t, glm::vec3(0.0, 0.0, -1.0), 2, &modelMatrix, VBO, shaderProgram, texture1, texture1, texture1);
 
 		t = Tile(SOUTH);
-		placeTile(t, glm::vec3(0.0, 0.0, -1.0), 1, &modelMatrix, VBO, shaderProgram3, texture1, texture2, texture3);
+		placeTile(t, glm::vec3(0.0, 0.0, -1.0), 1, &modelMatrix, VBO, shaderProgram, texture1, texture1, texture1);
 
 		t = Tile(NORTH | WEST);
-		placeTile(t, glm::vec3(-1.0, 0.0, 0.0), 1, &modelMatrix, VBO, shaderProgram3, texture1, texture2, texture3);
+		placeTile(t, glm::vec3(-1.0, 0.0, 0.0), 1, &modelMatrix, VBO, shaderProgram, texture1, texture1, texture1);
 
 		t = Tile(EAST | WEST);
-		placeTile(t, glm::vec3(0.0, 0.0, -1.0), 2, &modelMatrix, VBO, shaderProgram3, texture1, texture2, texture3);
+		placeTile(t, glm::vec3(0.0, 0.0, -1.0), 2, &modelMatrix, VBO, shaderProgram, texture1, texture1, texture1);
 
 		t = Tile(SOUTH | WEST);
-		placeTile(t, glm::vec3(0.0, 0.0, -1.0), 1, &modelMatrix, VBO, shaderProgram3, texture1, texture2, texture3);
+		placeTile(t, glm::vec3(0.0, 0.0, -1.0), 1, &modelMatrix, VBO, shaderProgram, texture1, texture1, texture1);
 
 		modelMatrix = glm::translate(modelMatrix, glm::vec3(1.0f, 0.0f, 3.0f));
 		//For movements outside placeTile function need this.
@@ -309,22 +328,22 @@ int main(int argc, char* argv[])
 		world.grid[tileCounter].position = currentPosition;
 
 		t = Tile(NORTH | EAST);
-		placeTile(t, glm::vec3(1.0, 0.0, 0.0), 1, &modelMatrix, VBO, shaderProgram3, texture1, texture2, texture3);
+		placeTile(t, glm::vec3(1.0, 0.0, 0.0), 1, &modelMatrix, VBO, shaderProgram, texture1, texture1, texture1);
 
 		t = Tile(WEST | EAST);
-		placeTile(t, glm::vec3(0.0, 0.0, -1.0), 2, &modelMatrix, VBO, shaderProgram3, texture1, texture2, texture3);
+		placeTile(t, glm::vec3(0.0, 0.0, -1.0), 2, &modelMatrix, VBO, shaderProgram, texture1, texture1, texture1);
 
 		t = Tile(SOUTH | EAST);
-		placeTile(t, glm::vec3(0.0, 0.0, -1.0), 1, &modelMatrix, VBO, shaderProgram3, texture1, texture2, texture3);
+		placeTile(t, glm::vec3(0.0, 0.0, -1.0), 1, &modelMatrix, VBO, shaderProgram, texture1, texture1, texture1);
 
 		t = Tile(NORTH);
-		placeTile(t, glm::vec3(-1.0, 0.0, 0.0), 1, &modelMatrix, VBO, shaderProgram3, texture1, texture2, texture3);
+		placeTile(t, glm::vec3(-1.0, 0.0, 0.0), 1, &modelMatrix, VBO, shaderProgram, texture1, texture1, texture1);
 
 		t = Tile(EAST | WEST);
-		placeTile(t, glm::vec3(0.0, 0.0, -1.0), 200, &modelMatrix, VBO, shaderProgram4, texture1, texture2, texture3);
+		placeTile(t, glm::vec3(0.0, 0.0, -1.0), 200, &modelMatrix, VBO, shaderProgram, texture1, texture1, texture1);
 
 		t = Tile(SOUTH | EAST | WEST);
-		placeTile(t, glm::vec3(0.0, 0.0, -1.0), 1, &modelMatrix, VBO, shaderProgram4, texture1, texture2, texture3);
+		placeTile(t, glm::vec3(0.0, 0.0, -1.0), 1, &modelMatrix, VBO, shaderProgram, texture1, texture1, texture1);
 		////////////////////
 
 		//Check call back events then swap buffers.
@@ -336,6 +355,22 @@ int main(int argc, char* argv[])
 		clock_t renderFrame = endFrame - beginFrame;
 		if (renderFrame < TIME_PER_FRAME_MICRO_SECONDS)
 			Sleep(TIME_PER_FRAME_MICRO_SECONDS - renderFrame);
+
+		//countDown += renderFrame;
+		//if (countDown > 5 * CLOCKS_PER_SEC)
+		//{
+		//	std::vector<float> action;
+		//	rl.maxQFunction(action);
+		//	float reward = action[3] - action[1];
+		//	rl.transitionNewState(reward, action);
+		//	//texture1 = generateLatticeNoise(200 + (rand() % 20), 200);
+		//	//texture1 = generateCloudTexture(200 + (rand() % 20), 200);
+		//	shaderProgram.setFloat("featureOne", action[0]);
+		//	shaderProgram.setFloat("featureTwo", action[1]);
+		//	shaderProgram.setFloat("featureThree", action[2]);
+		//	shaderProgram.setFloat("featureFour", action[3]);
+		//	countDown = 0;
+		//}
 
 		//printGSR(sc);
 	}

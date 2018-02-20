@@ -1,0 +1,55 @@
+#version 330 core
+#define iResolution vec2(800.0, 800.0)
+#define size iResolution
+#define tex iChannel0
+
+precision highp float;
+uniform float time;
+uniform sampler2D ourTexture01;
+
+#define PI 3.14159265358979323846264338327950288419716939937510
+const vec2 c=vec2(32.0,1.0);
+const float tpdlc=0.2137673;//precalculated 2*PI/length(c)
+//Draws two perpendicular spirals (from knighty and then I messed it up with gravity)
+float dspiral(vec3 p){//original https://www.shadertoy.com/view/ls2GRz
+  float r=length(p.xy);
+	vec2 f=vec2(log(r),atan(p.y,p.x))*0.5/PI;
+	vec2 d=f.y*vec2(c.x,-c.y)-f.x*c.yx;
+	d=(0.5-abs(fract(d)-0.5))*r*tpdlc;
+	float g=sqrt(abs(d.x-d.y));
+	p.y+=g*0.1;//now add gravity
+	p.xy*=1.0+g*0.00;//straighten a bit
+	r=length(p.xy);//and recalculate the second spiral
+	f=vec2(log(r),atan(p.y,p.x))*0.5/PI;
+	float d1=-f.y*c.y-f.x*c.x;
+	d1=(0.5-abs(fract(d1)-0.5))*r*tpdlc;
+	return min(sqrt(d.x*d.x+p.z*p.z),max(sqrt(d1*d1+p.z*p.z),-r+2.0-sin(time/1.4)*8.));
+}
+
+mat3 lookat(vec3 fw,vec3 up){
+	fw=normalize(fw);vec3 rt=normalize(cross(fw,normalize(up)));return mat3(rt,cross(rt,fw),fw);
+}
+
+out vec4 fragColor;
+in vec2 fragCoord;
+void main() {
+	vec3 ro=vec3(-0.0-sin(time),-1.0+sin(time),-4.0);
+	
+	vec3 rd=lookat(-ro,vec3(1.0,1.,0.0))*normalize(vec3((1.0*fragCoord.xy-size.xy*0.5)/size.y,1.0));
+	
+    vec3 col=vec3(2.);
+    vec3 bg=vec3(texture(ourTexture01,fragCoord/iResolution.xy)).xyz/3.0;
+	vec2 trap=vec2(100.0);
+	float t=-(ro.z+0.5)/rd.z,d=1.0;
+	for(int i=0;i<24;i++){
+		t+=d=dspiral(ro+rd*t)*0.8;
+		if(d<trap.x)trap=vec2(d,t);
+	}
+	float mind = 2.0 * trap.y / size.y;
+	if(trap.x>mind){
+         
+          col=mix(col,bg,min(1.0,smoothstep(1.0,mind,max(0.0,trap.x))))  ;
+         
+        }
+	fragColor = vec4(clamp(col,0.0,1.0),1.0);
+}

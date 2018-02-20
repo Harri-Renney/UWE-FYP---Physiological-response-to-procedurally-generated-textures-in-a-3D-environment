@@ -1,0 +1,31 @@
+#version 330 core
+
+out vec4 FragColour;
+
+in vec2 TexCoord;
+
+uniform float time;
+uniform int tileID;
+uniform float randomPassed;
+
+precision mediump float;
+
+float rand(vec2 co){
+    return fract(sin(dot(TexCoord.xy ,vec2(12.9898,78.233))) * 43758.5453);
+}  
+
+float Fast_RandFloat()
+{
+    int RandSeed = tileID;
+    RandSeed *= 16807;
+    return float(RandSeed) * 4.6566129e-010;
+}
+
+void main()
+{
+	float noise = 0.0;
+	//Just getting random value for each tile.
+	noise = randomPassed;
+	
+	FragColour = vec4(noise, noise, noise, noise);
+} 
