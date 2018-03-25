@@ -1,0 +1,21 @@
+#version 330 core
+
+////////////
+// Inputs //
+////////////
+in vec2 TexCoord;
+
+/////////////
+// Outputs //
+/////////////
+out vec4 colour;
+
+//////////////
+// Uniforms //
+//////////////
+
+void main ()
+{
+	vec4 c;
+	colour = vec4(c);
+}

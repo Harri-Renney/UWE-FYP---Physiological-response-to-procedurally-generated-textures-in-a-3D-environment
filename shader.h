@@ -60,9 +60,14 @@ public:
 		glDeleteShader(fragment);
 	}
 
-	void use()
+	bool use()
 	{
+		int status;
+		glGetProgramiv(ID, GL_LINK_STATUS, &status);
+		if (status == GL_FALSE)
+			return false;
 		glUseProgram(ID);
+		return true;
 	}
 
 	void updateMatrices(glm::mat4 modelMatrix, glm::mat4 viewMatrix, glm::mat4 projectionMatrix)

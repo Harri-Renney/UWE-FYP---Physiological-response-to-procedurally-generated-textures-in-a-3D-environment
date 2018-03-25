@@ -11,9 +11,11 @@ struct SerialConnection{
 	DWORD dwEventMask;
 };
 
-boolean setupSerial(char* comPort, SerialConnection *sc);
+boolean setupSerial(char* port, SerialConnection *sc);
 void closeSerial(SerialConnection sc);
 void printEA(SerialConnection sc);
 char* getEA(SerialConnection sc);
+void clearEA(SerialConnection sc);
+int stringToInt(char* s);
 
 #endif

@@ -31,14 +31,14 @@ mat3 lookat(vec3 fw,vec3 up){
 }
 
 out vec4 fragColor;
-in vec2 fragCoord;
+in vec2 TexCoord;
 void main() {
 	vec3 ro=vec3(-0.0-sin(time),-1.0+sin(time),-4.0);
 	
-	vec3 rd=lookat(-ro,vec3(1.0,1.,0.0))*normalize(vec3((1.0*fragCoord.xy-size.xy*0.5)/size.y,1.0));
+	vec3 rd=lookat(-ro,vec3(1.0,1.,0.0))*normalize(vec3((1.0*TexCoord.xy-size.xy*0.5)/size.y,1.0));
 	
     vec3 col=vec3(2.);
-    vec3 bg=vec3(texture(ourTexture01,fragCoord/iResolution.xy)).xyz/3.0;
+    vec3 bg=vec3(texture(ourTexture01,TexCoord/iResolution.xy)).xyz/3.0;
 	vec2 trap=vec2(100.0);
 	float t=-(ro.z+0.5)/rd.z,d=1.0;
 	for(int i=0;i<24;i++){

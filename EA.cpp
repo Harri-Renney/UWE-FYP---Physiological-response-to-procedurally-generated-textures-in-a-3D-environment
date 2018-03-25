@@ -1,8 +1,10 @@
+#include<math.h>
+
 #include "EA.h"
 
-boolean setupSerial(char* comPort, SerialConnection *sc)
+boolean setupSerial(char* port, SerialConnection *sc)
 {
-	sc->hComm = CreateFile(comPort,                //port name
+	sc->hComm = CreateFile(port,                //port name
 		GENERIC_READ | GENERIC_WRITE, //Read/Write
 		0,                            // No Sharing
 		NULL,                         // No Security
@@ -12,11 +14,11 @@ boolean setupSerial(char* comPort, SerialConnection *sc)
 
 	if (sc->hComm == INVALID_HANDLE_VALUE)
 	{
-		printf("Error in opening serial port");
+		printf("Error in opening serial port\n");
 		return false;
 	}
 	else
-		printf("opening serial port successful");
+		printf("Successful in opening serial port\n");
 
 	//Serial Port configuration
 	sc->dcbSerialParams = { 0 }; // Initializing DCB structure
@@ -78,5 +80,23 @@ char* getEA(SerialConnection sc)
 		sb[i] = byte;// Store Tempchar into buffer
 		i++;
 	} while (NoBytesRead > 0);
-	return sb;
+	char ret[4];
+	strncpy(ret, sb, 3);
+	ret[3] = '\0';
+	return ret;
+}
+
+void clearEA(SerialConnection sc)
+{
+	PurgeComm(sc.hComm, PURGE_RXCLEAR);
+}
+
+int stringToInt(char* s)
+{
+	int ret = 0;
+	for (int i = 0; i != 3; ++i)
+	{
+		ret += (s[i] - '0') * pow(10.0,(3 - (i+1 )));
+	}
+	return ret;
 }

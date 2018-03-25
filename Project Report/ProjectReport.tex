@@ -1,0 +1,1855 @@
+\documentclass{report}
+
+\usepackage[width=0.3\columnwidth]{caption}
+\usepackage{natbib}
+\usepackage{url}
+\usepackage{array}
+\usepackage[margin=0.5in]{geometry}
+\geometry{
+  top=0.5in,            % <-- you want to adjust this
+  inner=0.5in,
+  outer=0.5in,
+  bottom=0.7in,
+  headheight=3ex,       % <-- and this
+  headsep=2ex,          % <-- and this
+  footskip=6ex,
+}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{hyperref}
+\usepackage[toc,page]{appendix}
+
+%GLOSSARY
+\usepackage[utf8]{inputenc}
+\usepackage{glossaries}
+\makeglossaries
+ 
+\newglossaryentry{EDA}
+{
+    name=EDA,
+    description={Electrodermal Activity is the common term used for all electrical phenomena in skin, including all active and passive properties traced back to the skin.}
+}
+\newglossaryentry{OpenGL}
+{
+    name=OpenGL,
+    description={The Open Graphics Language is an open source, cross platform API for 3D graphics rendering.}
+}
+\newglossaryentry{API}
+{
+    name=API,
+    description={An Application Programming Interface is a set of programming tools used for building software applications.}
+}
+\newglossaryentry{Vertex Shader}
+{
+    name=Vertex Shader,
+    description={A programmable shader that equates to the vertex processing stage in the OpenGL rendering pipeline.}
+}
+\newglossaryentry{Fragment Shader}
+{
+    name=Fragment Shader,
+    description={A programmable shader that equates to the fragment processing stage in the OpenGL rendering pipeline.}
+}
+\newglossaryentry{GLSL}
+{
+    name=GLSL,
+    description={The OpenGL Shader Language is a shading language with C like syntax for GPU programming with OpenGL.}
+}
+\newglossaryentry{Q-learning}
+{
+    name=Q-learning,
+    description={Q-learning is an off-policy reinforcement learning technique.}
+}
+\newglossaryentry{Reinforcement Learning}
+{
+    name=Reinforcement Learning,
+    description={An approach to machine learning that is inspired by behaviourist psychology. Based around using trial and error to learn best actions in certain states.}
+}
+\newglossaryentry{Evolutionary strategy}
+{
+    name=Evolutionary strategy,
+    description={A nature inspired evolutionary algorithm that mimics the process from the Theory of Evolution. Very similar to the genetic algorithm.}
+}
+\newglossaryentry{Student's t-test}
+{
+    name=Student's t-test,
+    description={A statistical method used to see if two sets of sample data differ significantly or not.}
+}
+\newglossaryentry{SCL}
+{
+    name=SCL,
+    description={The Skin Conductance Level is the part of the Electrodermal activity signal which is influenced by slow variations from factors like hydration, skin dryness, etc}
+}
+\newglossaryentry{SCR}
+{
+    name=SCR,
+    description={The Skin Conductance Response is the part of the Electrodermal activity signal which is influenced by any emotionally arousing stimuli.}
+}
+\newglossaryentry{microcontroller}
+{
+    name=microcontroller,
+    description={A computer that occupies a single integrated circuit. This means it must include a CPU, memory and input/output interfaces.}
+}
+\newglossaryentry{pseudorandom}
+{
+    name=pseudorandom,
+    description={A process that appears to be random but is not. The pseudorandom sequence exhibits randomness but can be controlled to reproduce the same sequences (Usually with an input).}
+}
+\newglossaryentry{Noise}
+{
+    name=Noise,
+    description={In this project noise is the term for the random number generator of computer graphics.}
+}
+\newglossaryentry{GSR}
+{
+    name=GSR,
+    description={The outdated term used to describe electrical phenomena in skin. More up to date term is Electrodermal activity(EDA).}
+}
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+
+\fancyhead{}
+\fancyhead[LO,LE]{\leftmark}
+
+\usepackage{algorithm}
+\usepackage{algorithmicx}
+\usepackage{algpseudocode}
+
+\usepackage{titlesec}
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks,
+    citecolor=black,
+    filecolor=black,
+    linkcolor=black,
+    urlcolor=black
+}
+
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+ 
+\setlength{\parindent}{0.5em}
+\setlength{\parskip}{1em}
+
+\usepackage{graphicx}
+\graphicspath{ {images/} }
+
+\setcitestyle{authoryear, round, comma}
+
+\title{Physiological Response to Procedurally Generated Textures in a 3D Environment}
+\author{Harri Renney - 15008005	}
+
+\begin{document}
+\maketitle
+
+\vspace*{\fill}
+\begingroup
+\centerline{\Large{\textit{In memory of Syed Zaeem}}}
+\endgroup
+\vspace*{\fill}
+
+\tableofcontents
+
+\listoffigures
+
+\listofalgorithms
+
+\chapter{Introduction}
+
+The aim of this project is to investigate the procedural generation of computer graphic textures to invoke emotional response from an individual.\\
+The measured Electrodermal activity (\Gls{EDA}) of an individual will be used as a general indicator for the emotional response.
+Additionally the Electrodermal activity will be used to drive the learning process in the procedural generation of textures. This will be done using the well known
+reinforcement learning technique called Q-Learning.\\
+A 3D maze environment will be used to present the generated textures to the user. This is to create further immersion and give more influence to the textures in invoking an emotional response.\\
+To conclude this project, a user study will be conducted to evaluate the effectiveness of the program's ability to increase emotional arousal in an individual.
+
+\section{Requirements}
+
+The complete project goal is outlined in fulfilling the following requirements:
+
+\begin{center}
+$Requirements$\\
+\scalebox{1.0}{
+	\begin{tabular}{||m{1.2cm} | m{12.0cm}||} 
+		\hline
+		Number & Name\\
+		\hline
+		1 & Explorable 3D environment\\
+		\hline                                           
+		2 & Electrodermal Activity Recording\\
+		\hline  
+		3 & Reinforcement Q-Learning to influence procedural texture generation\\
+		\hline                                           
+		4 & Evolutionary Strategy for the Q-Learning policy\\
+		\hline		
+		5 & Procedural texture generation with modifiable features\\
+		\hline                                           
+		6 & A user study to evaluate the effectiveness of the program\\
+		\hline
+	\end{tabular}
+}
+\end{center}
+
+\vspace{0.5cm}
+
+\noindent\underline{Explorable 3D environment}
+
+An explorable 3D maze environment will be developed to present the procedurally generated textures to the user. The textures will be applied to the surfaces of the
+maze walls, floor and ceiling. With the user confined to this textured maze, a greater emotional reaction should be experienced by the user in response to the textures.
+
+Other ways of presenting the textures were considered. An example of a simpler method would be to present the textures on a static object. However it is uncertain if this
+would be sufficiently engaging for the user to experience any emotional response to.\\
+Ideally it would be best to create a more complex 3D environment than a maze to immerse the user as much as possible in the textures. Spending too much time working
+on this would likely detract from the focus of the rest of the project.
+
+\hypertarget{txt:r2}{\noindent\underline{Electrodermal Activity Recording}}
+
+The Electrodermal activity of the user will be used to indicate any emotional response caused by the generated textures.\\
+A device capable of measuring EDA will need to be developed. This will require embedded software to be written in order for EDA measurements to be taken and sent to the main program.
+Additionally the main program will need to be able to interact with the EDA device to receive measurements.
+
+Emotional responses to external stimuli make clear changes in the EDA of the individual, therefore a high level of precision in the measurements will not be required.
+
+\noindent\underline{Procedural texture generation with modifiable features}
+
+A method for generating textures in real-time needs to be developed.\\
+Procedural textures are generated using the texture coordinates as inputs to generate the pattern. Then Irregularity is introduced to the pattern using pseudorandom noise functions.
+
+This process should be controllable through a collection of modifiable texture features. A feature could be the presence of a certain pattern, or the degree of the 
+primary colour red in the final texture.
+By progressively changing the features, new complex textures can be generated.
+
+The generation process needs to be optimized, it shouldn't effect the performance of the program enough to effect the user interaction. A smooth experience is required
+to maintain the level of immersion created by the maze environment.
+
+\noindent\underline{Reinforcement Q-Learning to influence procedural texture generation}
+
+The process of producing new feature sets for texture generation will be done using a reinforcement learning technique. Using this, it might be possible to learn texture
+features which increase emotional arousal in the user. The EDA will be used as the observable reward signal to drive the learning process.
+
+Specifically the renown Q-Learning algorithm will be used. This will be used as it can easily be extended to incorporate generalisation of states and actions using value approximation.\\
+The number of possible texture images is considered endless, therefore it must be generalised to realistically process this way.
+
+\noindent\underline{Evolutionary Strategy for the Q-Learning policy}
+
+The policy in a reinforcement learning method is the way in which the agent decides on the next action to take from the current state.\\
+The Q-Learning agent's state is represented by real number values and therefore is considered a continuous search space. For this reason an algorithm that can effectively
+search a continuous problem space is needed.\\
+The evolutionary strategy algorithm is capable of search with reliable results, provided it can calculate the quality of the actions accurately. The Q-Learning agent provides
+the estimation for the quality of the actions for the evolutionary strategy.
+
+\noindent\underline{A user study to evaluate the effectiveness of the program}
+
+Although is is empirically accepted that visuals have an effect on an individual's emotional response \citep{pitchforth2010emotional}, whether visuals can be generated
+to progressively increase emotional arousal is questionable.\\
+A brief investigation into the effectiveness of this program will be made as part of a user study.\\
+Two sets of sample data will be gathered from a population of users. The first sample set of a natural period, the second during a period interacting with the program. 
+A student t-test will then be made on the results. If there is a statistically significant difference between the two periods, the program's effectiveness in 
+reaching its goal will be supported.
+
+Originally the project was focused on the emotional response of stress. However, identifying specific emotions using EDA is a highly debated and controversial 
+topic as described in \citep{duffy1972handbook}. For this reason the project aim was revised to be more general and consider all emotional responses.
+
+\chapter{Background Concepts}
+
+In this section all the relevant background information that will need to be covered to fully understand this project will be described in brief but sufficient detail.
+
+\section{OpenGL}
+
+The OpenGL (Open Graphics Language) is an open source, cross platform API (Application Programming Interface) for 3D graphics rendering \citep{woo1999opengl}. Additionally it can be thought of as a standard or specification upheld by \citep{KhronosGrouP}, who are currently the group that manages and updates OpenGL officially.
+
+More specifically it is a set of defined methods for interacting with a GPU (Graphics Processing Unit) in programming. It was intentionally designed to be hardware and OS (Operating System) independent, meaning it can be used across multiple platforms. However this streamlined design means it is solely a graphics rendering library and does not provide support for other related functions like windowing and inputs for interacting. These must be acquired from other API's or programmed separately.
+
+OpenGL can be thought of as working like a client-server system. The application that utilises the OpenGL API makes calls to the graphics drivers which, acting as a server receives these calls and acts on them appropriately to produce an image. This works because graphics manufacturers supply support for OpenGL to understand the calls made from the application using OpenGL.
+
+\subsection{Rendering Pipeline}
+
+OpenGL use consists of a few major operations it follows known as the "OpenGL Rendering Pipeline" to convert some data the application provides into a final rendered image.\\
+The basic steps are outlined below:
+
+\begin{enumerate}
+	\item Vertex Processing: Processes vertex data provided from application to position in three dimensional space. (Vertex Shader)
+	\item Primitive Assembly: Collects few single primitives into a sequence of primitives. Like lines, triangles etc.
+	\item Rasterization: Visible newly assembled primitives divided into fragments. Fragments are little sections of the scene that are used to compute final pixel data.
+	\item Fragment processing: Each fragment is given data for producing the pixels colour within the fragment in the next step. (Fragment Shader)
+	\item Frame Buffer: All the information provided to render images on the screen loaded into frame buffer ready to load.
+\end{enumerate}
+\citep{KhronosGroupPipeline}
+
+\vspace{0.8cm}
+\begin{figure}
+\label{fgr:gp}
+\centerline{\fbox{\includegraphics[width=19.0cm]{Graphics_Pipeline}}}
+\caption[Graphics Pipeline]{}
+\centerline{Graphics Pipeline}
+\end{figure}
+
+\vspace{0.8cm}
+
+There are two main shaders which need to be written in order for OpenGL to operate. They are the Vertex shader, which handles the points in the 3D space. Then the Fragment shader, which handles the pixel colour.
+
+\subsection{OpenGL Related API's}
+GLFW (Graphics Library Framework) is a open source, multi-platform library for use with OpenGL for windowing functionality.\\
+Therefore it provides programmers with the ability to create and manage windows the application will run within. This includes input events through keyboard, mouse, etc.\\
+\citep{GLFW}
+
+GLAD (GL Loader-Generator) is an OpenGl Loading Library.\\
+GLAD is a library purely built around supporting OpenGL extensions for the target platform/OS. Required for efficient runtime mechanisms, which is important for OpenGL to perform well.\\
+\citep{GLAD}
+
+\subsection{GLSL}
+GLSL (OpenGL Shader Language) is a shading language with C like syntax for GPU programming. The application that uses OpenGL will compile the specified files into shader programs which are loaded onto the GPU to process data as part of the rendering pipeline.\\
+This is a very important part of using OpenGL. Much of how visuals appear in the final rendered image is decided in the shaders as they process the data received to the GPU.
+There are two main shaders that are required to be written and loaded onto the GPU in order for OpenGL to operate. They are the vertex shader, which is the program which receives the vertices which are 3D points in space and processes them. Then there is the fragment shader which calculates the colour for the pixels within the spaces between the previously processed between the vertices.
+
+\subsection{Relevance}
+
+OpenGL will be used in this project as it provides great low level control and access to the GPU. This level of control is needed to procedurally generate textures.\\
+Furthermore the supported C API provided by Khronos fits the rest of the program stack.
+
+\section{Electrodermal Activity}
+
+Electrodermal Activity (\Gls{EDA}) is the common term used for all electrical phenomena in skin, including all active and passive properties traced back to the skin.\\
+In simple terms it is the degree of sweat observed in an individual. Sweating is a physiological reaction related to the nervous system.
+With respect to the autonomic Nervous System, Electrodermal Activity has for a long time been most frequently used as an indicator of arousal in psychophysiological research \citep{duffy1972handbook}.
+
+The outdated term used for this same phenomena in skin is Galvanic Skin Response (GSR).\\
+It is largely agreed upon that this term was not completely appropriate for a number of reasons:
+\begin{enumerate}
+	\item It suggests skin is regarded as a galvanic element, which it is not.
+	\item It suggests Electrodermal activity as always being provoked as some kind of a reflex.
+	\item Galvanic Skin Response was being used to cover not only Electrodermal activity but all Electrodermal phenomena in general which was ambiguous.
+\end{enumerate}
+In this report the more up to date term Electrodermal Activity will be used but the term galvanic skin response that might be used in other documents is likely referring to the same thing.
+
+\subsection{Electrodermal Recording Methods}
+
+Electrodermal recording is possible with relatively simple equipment, resulting in a variety of methodologies.\\
+There have been attempts at standardizing techniques of Electrodermal recording as \citep{fowles1981publication} explains, but without any official standard declared so far.\\
+The most common used method is exosomatic DC recording. This is where a small direct voltage (DC) is applied across the skin using two electrodes and the current is kept constant. This means the resistance of the skin can be measured using Ohm's law which states: $R = \frac{V}{I}$ (This paragraph needs revising/detail) \citep{boucsein2012electrodermal}
+
+\citep{iMotion2017galvanic} explains there are two components in the resulting Electrodermal signal:
+
+\textbf{Skin Conductance Level} (SCL) is the slow variation and change in the signal within tens of seconds to minutes. SCL is constantly changing within an individual and is dependant
+on things like hydration, skin dryness, autonomic regulation. SCL also differs naturally between individuals, and isn't informative for emotional observation as cause of change 
+isn't related to emotional response.
+
+\hypertarget{txt:scr}{\textbf{Skin Conductance Response}} (SCR) is the faster alterations in the signal as obvious Electrodermal Activity bursts/peaks. It is sensitive to specific emotional arousing stimulus 
+events. These bursts occur between 1-5 seconds after the occurrence of the emotional stimuli. There are also non-specific skin conductance responses that happen spontaneously 
+(not caused by emotional stimuli) at a rate of 1-3 per minute. Though these can be filtered out.\\
+To identify emotional responses accurately it is important to only be recording changes in SCR specifically. To do this requires identifying the SCL signal in the Electrodermal signal as well. 
+
+SCL isn't the signal focused on when identifying emotional responses from the individual. However it is important to work out in order to find the SCR signal which is in response to emotion.
+
+Each SCR signal can be characterized by four metrics:
+\begin{enumerate}
+	\item Latency: The duration from stimulus onset to the onset of the SCR burst. Typically is 1-5 seconds after stimulus onset. 
+	Onset generally set to point where Electrodermal activity exceed some minimum amplitude boundary. Changes that occur in too long a period typically declared 
+	as NS-SCRs and are then not considered.
+	\item Peak Amplitude: The amplitude difference between onset and peak. So the change from onset value to peak. 
+	\item Rise time: The duration from onset to the peak.
+	\item Recovery Time: The duration from peak returned to baseline. From onset to peak is usually much quicker than recovery to baseline.
+\end{enumerate}
+
+\subsection{Relevance}
+
+Electrodermal activity will be used in this project as it is a reliable indicator of any emotional response in an individual. The physiological reaction it measures quickly
+takes place after the external stimuli is experienced. This means the stimuli causing the emotional response can be detected quicker for the program to act on.\\
+Measuring EDA requires a simple hardware setup and is a relatively straightforward process.  The measured values can then be easily incorporated into the main program
+to be used for the learning process.
+
+\section{Reinforcement Learning}
+
+Reinforcement learning is a machine learning methodology which establishes a mapping of situations/states to actions with the aim of reaching the goal optimally.\\
+It does this by representing the system as an actor/agent which navigates through the states in an environment based on the actions it takes. The agent learns the problem by 
+trial and error, updating its knowledge of the problem overtime as it makes right or wrong actions.
+
+\subsection{Markov Decision Process}
+
+To understand reinforcement learning, the type of problem it is used to solve should be described first.\\
+The problem type is known as a Markov Decision Process (MDP). This is a type of problem which is made up of states and actions. The states provide sufficient 
+information to uniquely identify the current situation. This means knowledge of past states or actions are not needed to solve it. A non-markov problem would 
+then be where states provide ambiguous data, so knowledge of the past is needed to identify situation.
+
+\citep{gosavi2011tutorial} covers the framework of the Markov Decision Process as having the following elements: 
+\begin{enumerate}
+	\item State of the system = The set of parameters or information that describes the system. States will either have a discrete set or be continuous. Continuous states require some form of generalisation to represent.
+	\item Actions = Actions are processes that transitions the system from its current state to a new one. Problems will either have a discrete set of actions it can take 
+	from each step or continuous actions that must be generalised.
+	\item Transition probabilities = Some environments are uncertain and actions in them unpredictable. In these cases there is probability involved to transition from current state $i$ to another particular state $j$ as a result of an action $a$.
+	\item Immediate rewards = The reward signal received by the system for transitioning from one state to another. This might be known before transitioning or only after 
+	the transition is made. Some problems will have immediate rewards in most/all transitions and some will have sparse reward, maybe even only present on the goal state!
+	Reward is the signal to show the goodness of a state, it's progression to the goal.
+	\item Policy = The behaviour of the system. It defines how the system decides the next action to take in every state. The goal of the policy is to maximize reward in the long run.
+\end{enumerate}
+
+There are a number of different techniques that can solve a markov decision process. Reinforcement learning is one of them and can do this efficiently even with a huge number of possible states and actions.
+
+\subsection{Q-Learning}
+
+Q-learning is an off-policy reinforcement learning technique. It can build a mapping of good actions through an environment without requiring a model for that environment. Further, q-learning can handle stochastic actions and rewards without needing to adapt.
+
+A Q-value is the estimated reward a state is given by the Q-Learning algorithm. The algorithm draws on knowledge stored from past actions and states visited.\\
+Using the Q-value the agent can estimate how good each action is. The policy can use these estimates to decide on which one to take. A greedy policy would 
+take the best estimated action but will sacrifice exploration.
+
+The process to update the agents knowledge of the problem in Q-Learning as it visits each new state:
+
+\vspace{0.5cm}
+
+\centerline{ $Q(s_t, a_t) \leftarrow Q(s_t, a_t) + \alpha[r_{t+1} + \lambda \binom{max}{a} Q(s_t, a) - Q(s_t, a_t)]$ }
+
+The Q Function takes into account the following elements: 
+\begin{enumerate}
+	\item Learning Rate $\alpha$ = Determines the extent the newly acquired information influences old information. A value in range [0.0-1.0] where 0.0 would have no learning and 1.0 would consider new information completely.
+	\item Discount Rate $\lambda$ = Determines the influence of future estimated reward on the current information stored. A value in range [0.0-1.0] where 0.0 would be short sighted only considering current reward and 1.0 would be long sighted.
+	\item $Q(s_t, a_t) \leftarrow Q(s_t, a_t)$ = Update the current Q value with the current Q value plus the new information gathered.
+	\item $r_{t+1}$ = The reward earned for transitioning to the next state.
+	\item $\binom{max}{a} Q(s_t, a)$ = The max q value estimated to be possible to achieve from next state.
+	\item $-q(s_t, a_t)$ = The existing Q value subtracted from the reward and estimated max q value to find difference.
+\end{enumerate}
+
+This is the basic Q-Learning algorithm which supports discrete states and actions. With discrete spaces that are not too large, a Q-Value can be stored in memory for
+each state-action pair.\\
+This is a problem when storing every possible state-action value estimations. Typically a lookup table stored as a 2D matrix is used for state-action Q-values. The space
+required to store this is proportional to the size of the state space, which grows exponentially with the number of variables.\\
+This is a common problem and is known as the "curse of dimensionality" \citep{bellman2013dynamic}. This makes many real Markov decision problems 
+impractical to solve this way.
+
+\subsection{Value Function Approximation}
+
+(Incremental method used. Just uses that generations value to update/learn from then forgets and uses next increment.\\
+Batch method would use past situations to learn from.)
+
+In the real world, many  Markov decision problems are not made up of a reasonable number of discrete states and actions. The possible states and actions are typically 
+continuously precise or a huge number that is considered infinite.\\ The basic method of q-learning already covered considers discrete states and actions but usually a
+ more developed method needs to be used which provides generalisation.\\
+A solution to this is to use Value Function Approximation.
+
+Value function approximation uses a parametrised function in place of looking up a value estimate from a table. The function takes values as features of the 
+current state and works out the value estimation from them appropriately.\\
+This is a form of generalization meaning some of the guarantees of reinforcement learning is lost, however if done correctly is still functional and useful.
+Reinforcement learning can easily be extended to include function approximation for its estimations unlike other algorithms.
+
+The learning takes place in the process of updating the weights which influences the Q-function. So the goal is to learn good values for the weights which manipulate the importance of each of the state's features.
+Ideally the number of features/parameters for the function should be far fewer than the possible states (exponentially fewer!). This is why it so well counters the exponential growth of the state-action space.
+
+There are many function approximators that can be used to learn the weights:
+\begin{itemize}
+	\item Linear Combination of features
+	\item Neural Network
+	\item Decision Tree
+	\item Fourier/Wavelet bases
+\end{itemize}
+
+The simplest function approximation would be linear, essentially a weighted sum of all states:
+
+\vspace{0.5cm}
+
+\centerline{$Q(s) = W_0 + W_1 * f_1(s) + ... + W_n * f_n(s)$}
+
+Linear approximation is guaranteed to converge on local optimum. So if there is only one optimum in search space it works well. If there are many optimum across the search space and a single
+global optimum, it isn't likely to find it.\\
+
+This is known as linear approximation and it is guaranteed to converge on a local optimum. So if there is only one peak in the search space this works fine, but once 
+there are many local optimum across the search space and only a single global optimum, this method will not likely find it.\\
+In problems where there is only one optimum or finding the global isn't a necessity this works fine. If it is important to find the global then a non-linear method might be required. An example of this might be an Artificial Neural network (ANN) which would be much more suited to discovering a global optimum in a more complex problem space. \citep{sutton1998reinforcement} [P.167+]
+
+
+\subsection{Relevance}
+
+Part of this project is in discovering the unknown, theoretical values required to construct emotionally arousing textures. The quality function is unknown, but there is a 
+quality signal for emotional responses given by any changes in the EDA.\\
+Q-learning is the method chosen for learning this situation. Furthermore, value function approximation is used to generalise the problem and overcome the near endless number of 
+texture states. In fact, applying reinforcement learning to these large problem spaces tends to work more efficiently than other conventional methods.
+
+\section{Evolutionary Strategy}
+
+Evolutionary Strategies (ES) are a sub-group of nature inspired search methods called Evolutionary Algorithms, of which the renown Genetic Algorithm belongs to.\\
+It works by following inspiration from parts of the theory of evolution. By making small variation to solutions and keeping the best, progressively better solutions can
+be found.
+
+\subsection{General Outline}
+
+The basic abstracted idea of Evolutionary Strategies is to have an initial population of parents which each represent a possible solution to the problem. Each parent 
+generates a collection of children for the offspring population. The process of generating children includes evolutionary operators acting on a specified number of 
+copies of the parent. Each child is then evaluated for quality to solve the problem and the best from the offspring and optionally the parent too (Depending on selection technique) is selected to be 
+the a parent in the next generation. This is done for each original parent until a new population of parents is formed of same size. This is repeated with the idea 
+that by using these evolutionary operators to iteratively produce better solutions until a satisfactory one is generated.
+
+\subsection{Operators}
+
+The two basic selection techniques first covered in \citep{rechenberg1973evolution} are plus selection and comma selection:\\
+
+\textbf{Plus Selection} $(\mu + \lambda)$ = The selection pool is made up of the newly generated solutions $\lambda$ and the original parent $\mu$ so a better parent will be chosen over its children still. Considered more exploitative.\\
+\textbf{Comma Selection} $(\mu , \lambda)$ = The selection pool is only the newly generated children  $\lambda$ of the parent $\mu$ meaning the parent even if better is forgotten and not accounted for in choice for next generation. Considered more explorative.
+
+\textbf{Mutation Operator} = In Evolutionary Strategies this is a basic variation operator, introducing majority of genetic variation in children solutions.\\
+This is still entirely problem-dependant in regard to the solution representation.
+[Can extend with more detail]
+
+\textbf{Recombination Operator} = In Evolutionary Strategies this is where information is shared between two or more parents
+[Can extend with more detail]
+
+\subsection{Relevance}
+
+The Evolutionary Strategy algorithm is used in the program as part of the Q-Learning policy. It is used as the algorithm for searching the huge search space of potential 
+future actions for the Q-Learning agent to take. An evolutionary strategy explores close to the existing solution and adds other advantages, like self-adaptive 
+mutation. This makes it more effective than other methods, including just randomly generating new actions.\\
+The Evolutionary strategy was chosen over the genetic algorithm as the solutions are encoded as a vector of real numbers. This matches the vector of texture feature floats
+required for generating the textures in the program. Additionally with the right parameters it can be run with little impact on performance, which is important to maintain in the program.
+
+\section{Procedural Pattern/Texture Generation}
+\label{section:ppg}
+
+The term procedural in computing can be thought of a label for data that is produced through program code rather than a data structure.\\
+This means a procedural texture is purely synthetic. It is generated from a program or model rather than read from a stored image in memory.
+Procedural texture generation applies this method of algorithmically generating data for use in textures rather than reading one stored in memory. It is only 
+concerned with how to present an image, typically with an RGB value for each pixel.
+
+An RGB value is a collection of three different values which specify the amount of Red, Green and Blue combined into the resulting colour. Each value must be within a 
+common range. Often used is [0-255], or [0.0-1.0] for more continuous precision. Further this format can be extended to RGBA which includes the original colours and 
+an alpha channel, which decides the degree of transparency to the colour.\\
+There are other forms of representing colours and pixels but RGB is by far the most popular used.
+
+There are two methods for procedurally generating textures:
+
+\textbf{Explicit methods} where values generated directly that make up textures. This means to generate textures in some fixed order previously then storing it in a conventional way to be used later. In procedural textures this would be done by generating the image in the program/application on the CPU, storing it in an image buffer to be loaded later on the GPU. This method gives more access to variables from the program but less adaptive if inputs frequently change.
+
+\hypertarget{txt:im}{\textbf{Implicit methods}} where values generated in reply to a query for a particular point, so evaluation of each point on request. In procedural textures this would be done by generating values as each pixel is considered on the fragment shader. This has more limited access to some data from the application as processed on GPU but typically faster if inputs are frequently changing.
+
+Both of these methods generally work for most applications, but some are naturally better suited for certain situations.
+
+In procedural textures, the image is defined by taking the texture or world coordinates as an input into some function $f(x)$. The function then processes the points 
+in a particular way to output a colour for that position.\\
+A simple example would be for generating a checkerboard. A grid of squares is calculated, then using the points coordinates outputs the correct colour. Either a white 
+or black pixel depending on which square it is calculated to be in. This is done for each pixel until a whole image of a black and white checkerboard squares is formed.
+
+\vspace{0.8cm}
+
+\begin{figure}
+\centerline{\fbox{\includegraphics[width=19.0cm]{Procedural_Pattern_Explain}}}
+\caption[Procedural pattern generation]{}
+\centerline{Procedural pattern generation decides colour from texture coordinates}
+\end{figure}
+
+\vspace{0.8cm}
+
+Within texture generation there are two areas to procedural generation:
+
+\textbf{Pattern generation} is where the texture pattern is defined. So the initial values of surfaces before any further processing is done.
+
+\textbf{Shading mode} is where the program receives the initial pattern and processes it to simulate the behaviour of that surface in respect to lighting and reflection etc. A shading model can process any pattern it receives, it could be a procedural one just generated or a non-procedural stored image.
+
+\textbf{Complex pattern generation} is based around the idea of building up small/simple patterns one into the next to form complex patterns. A common way is known as \textbf{layering}, where one texture placed on top of another to form final texture.\\
+Another is \textbf{function composition} where outputs of one small function used as inputs to the next, chained together, each providing its functionality to result in the final image. Function composition is a fundamental part of computer program in general so is no surprise to be found useful in pattern generation either.
+
+\citep{ebert2003texturing}
+
+\subsection{Noise}
+
+To generate convincing irregular procedural textures, an irregular primitive function is required. This is called noise.\\
+The noise function is pseudo random and will break up the regularity in patterns.\\
+The noise function needs to be pseudo random as a truly random function would change between frames, meaning the texture would not remain constant. A
+pseudo random function will produce the same "random" output with the same inputs. Therefore it can be controlled by using consistent inputs between frames.
+
+As defined by the pioneers in procedural texturing and modelling, (\citep{ebert2003texturing}) the Ideal noise function properties:
+\begin{itemize}
+	\item Noise is a repeatable pseudorandom function of its inputs.
+	\item Noise has a known range, from -1 to 1.
+	\item Noise is band-limited, with a maximum frequency of about 1.
+	\item Noise doesn't exhibit obvious periodic/regular patterns. Pseudorandom function swill always be periodic, but the period can be very large to satisfy this.
+	\item And two other which are not important to raise here.
+\end{itemize}
+
+A noise function fed inputs of $n$ dimensions will output a value for $n+1$ dimensions. So a 2D noise function input with x and y coordinates will output a 3D value, perfect for creating texture of a material.
+By extending the noise into an additional dimension from 2D to 3D the extra dimension can be used as time to animate a texture. This could apply to an ocean wave scene. \citep{perlin2002improving}
+
+Lattice noises are the most popular implementations of noise for procedural texture generation. If done correctly it satisfies the ideal noise function requirements. The core to how Lattice noise works is in a set of random values inside a "lattice" of noise. Essentially a lattice is a stored table of static numbers.\\
+The original idea for lattice noise was thought of by \citep{perlin1985image}.
+
+\vspace{0.8cm}
+
+\begin{figure}
+\centerline{\fbox{\includegraphics[width=13.0cm]{Lattice_Noise}}}
+\caption[Lattice Noise]{}\label{fgr:ln}
+\centerline{Lattice Noise}
+\end{figure}
+
+In lattice noise, maxima and minima will occur at regularly spaced intervals. The recurrence of these maxima and minima can be noticeable to a user as can be seen
+in this example of a basic lattice noise with no techniques employed to avoid it. This can be observed in figure~\ref{fgr:ln}.\\
+Lattice noise on its own will not fulfil the requirement "Noise doesn't exhibit obvious regular patterns" but there are ways to avoid this. This is typically done by extending the noise function to what's called gradient noise, which is described by Ken Perlin in the same journal.
+
+\vspace{0.8cm}
+
+\begin{figure}
+\centerline{\fbox{\includegraphics[width=13.0cm]{Lattice_Noise_Turbulence}}}
+\caption[Lattice Noise Turbulence]{}\label{fgr:lnt}
+\centerline{Turbulence: Ten calls to Lattice noise combined}
+\end{figure}
+
+Turbulence works by making several calls to a noise function and combining them together to make a stochastic spectral function with a fractal power spectrum, which is used for creating irregular patterns.\\
+The irregular, smoother randomness generated through turbulence can then be used as part of the input to any pattern generation function that allows a noise input as a parameter.
+
+\section{Arduino}
+
+
+\chapter{Related Work}
+
+What follows are some of the existing projects which have been done in a similar domain and assesses their similarity to this project.
+
+\section{Stress makes art: Galvanic skin response and visual generation}
+
+The project goal for \citep{jocelynzada2013stress} was to take the Electrodermal Activity reading
+from a user to be used as an input for the creation of graphical visuals in a window, according to his defined algorithm.\\
+An Arduino was used for setting up the circuit with the sensors. The device outputs a variable voltage with a constant current to read the skins resistance (exosomatic DC).\\
+The method used for recording EDA is basic. However it proves sufficient and reliable in this project as its use is far from a safety critical task or one that requires a high degree of precision.
+(Talk about why I use simple recording method too.)
+
+The program that generated the visuals was written in (...). It uses the EDA measurements received from the Arduino device via the serial port as inputs to the visual generation algorithm.
+
+\vspace{0.8cm}
+
+\centerline{\fbox{\includegraphics[width=13.0cm]{Stress_Makes_Art}}}
+\centerline{Image formed using Electrodermal activity to influence it's creation.}
+
+\vspace{0.8cm}
+
+\section{Development of biofeedback mechanisms in a procedural environment using biometric sensors}
+
+In this project \citep{torres2013development} the study used different methods
+of biofeedback in video games with the goal of creating further human-computer 
+interaction.\\
+A framework was developed capable of using a variety of different 
+biofeedback models which can be drawn from for use in any environment, as 
+they developed the frame work in mind to be independent, so capable of 
+being applied in other games with ease. Though, in the study they developed 
+a specifically tailored environment for use in order to test/asses the effect of 
+the various features of the biofeedback model.\\
+The collected biofeedback in their specific environment was used to effect the game environment and physics, like how fast the user was moving through the world.
+An increase in physiological arousal being detected increased the speed of 
+movement, then if relaxed the user moved slower.\\
+The only visuals/graphics effected by the biofeedback was a case where bugs would appear on the walls if the user's observed stress level past some threshold.
+This is a very similar element to the aim of this project. On detecting 
+arousing visual stimuli, attempting to increase arousal further through the visuals/graphics. 
+However this is as close as this project came to procedural graphics, but had the potential 
+to further expand into generating visuals/graphics from the readily available
+ biofeedback through their independent framework.
+ 
+\chapter{Design}
+
+In this chapter the entire program is broken down into the essential major modules needed to achieve the goal of the project. Each module's contents will be summarised
+and the relations between them defined to form the entire program.
+
+Many of the third party API's used like OpenGL have a purely C function programming structure. Therefore modules working with them take a C 
+functional approach as well. The modules which were identified as independent from these third party API's could be designed as classes with C++ object orientated structure.
+For this reason some of the modules take the functional approach and so the program is not considered fully object orientated even if it does use classes
+for the more generic modules.\\
+UML is commonly used in designing purely object orientated systems however it can still be used to include functional-based modelling. This is described in detail by \citep{UML2009C}.\\
+UML design will be used to describe the program with functional modules given stereotype $<<$File$>>$ and object oriented modules $<<$Class$>>$.
+
+The following UML diagram gives an abstract view of the major modules that will be needed:
+
+\vspace{0.8cm}
+
+\begin{figure}
+\centerline{\includegraphics[width=13.0cm]{UML_Diagram}}
+\caption[UML File Diagram]{}
+\label{fgr:umld}
+\centerline{UML File Diagram of the whole program}
+\end{figure}
+
+The diagram and upcoming descriptions of the modules only include the important and unique functions and variables. Assume basic functionality like
+getters and setters in the classes.\\
+
+Now with all the major modules identified, a section will cover each in more detail.
+
+\section{3D Environment}
+[Brief description]
+
+\vspace{0.8cm}
+
+\begin{figure}
+\centerline{\includegraphics[width=13.0cm]{Flow_Diagram}}
+\caption[System Flow Diagram]{}
+\centerline{Flow diagram showing abstract step-by-step process through the main 3D Environment program}
+\end{figure}
+
+\vspace{0.8cm}
+
+\noindent\underline{Variables}
+
+\textit{Camera camera}\\
+Used to decide how the scene looks when rendered to the window. The camera does this by taking the current position set by previous function calls 
+and calculating the view matrix which decides where the vertices are in relation to the user,
+
+\textit{QLearning ql}\\
+Used to intelligently generate a new set of changes to be made to the current set of procedural texture features.
+
+\textit{Tile tile}\\
+Used to construct a specific tile to next load onto GPU to render to the scene.
+
+\textit{vec2 position}\\
+Used to keep track of the users position in the 3D world. The main purpose for this is for collision detection with walls. However has future potential
+for other uses.
+
+\noindent\underline{Functions}
+
+\textit{void windowInit()}\\
+Using mainly GLFW API calls. Prepares a window and context for user interaction and rendering of scene.
+
+\textit{void drawPanel(Tile tile, unsigned int texture, int vertice)}\\
+Draws a panel of a tile to the scene.
+
+\hypertarget{txt:pt}{\textit{void placeTile(Tile tile, glm::vec3 translation, int numberTiles, glm::mat4* modelMatrix, int VBO, Shader shaderProgram, unsigned int texture)}}\\
+Draws a tile to the scene in a place specified within the 3D world.
+
+\textit{void framebuffer\_size\_callback(GLFWwindow* window, int width, int height)}\\
+This callback function is executed on detection of a resize window event. In the function is code to handle anything affected by the window resize.
+
+\textit{void key\_callback(GLFWwindow* window, int key, int scancode, int action, int mods)}\\
+This callback function is executed on detection of a keyboard input event. In the function is a switch case with code for handling specific key inputs.
+
+\textit{void cursor\_position\_callback(GLFWwindow* window, double xpos, double ypos)}\\
+This callback function is executed on detection of cursor position change. In the function is code to change the camera position depending on cursor position.
+
+\section{Reinforcement Learning}
+This module is used to create a Reinforcement learning agent. More specifically the agent employs the Q-Learning algorithm with linear value approximation to learn weights for future state estimates.\\
+The evolutionary strategy is inherited to define the agent's policy/behaviour. This means it uses the evolutionary strategy to search for the next action to take from the current state.
+
+\begin{algorithm}
+\caption{Q-Learning Value Approximation}
+\label{alg:qlva}
+\begin{algorithmic}[1]
+\State Initialise Weights $w = {w_0, w_1, ..., w_n}$
+\For{each episode/run}
+\State $s \leftarrow$ Initial State
+\State $a \leftarrow$ Action decided by policy (Evolutionary Strategy)
+\State Take action a, observe reward r and next state is s'
+\State Update weights w
+\State $w \leftarrow w + \alpha(r + \lambda \binom{max}{a'} Q(s',a') - Q(s,a)) \overleftarrow{\triangledown}_w Q(s,a)$
+\State $s \leftarrow s'$
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+
+\noindent\underline{Variables}
+
+\textit{std::vector$<$std::pair$<$feature, weight$>>$ state}\\
+Defines the current state of the agent. In value approximation a state is defined by a collection of features in some range and weights which decide their importance.
+
+\textit{float learningRate}\\
+The learning rate is a real number in range 0.0 - 1.0 which decides the influence new information has on the agents weightings.
+
+\textit{discountRate}\\
+The discount rate is a real number in range 0.0 - 1.0 which decides the influence the estimated future Q values for the next possible states has on the the agents weightings.
+
+\noindent\underline{Functions}
+
+\textit{void QLearningAppoxLinear()}\\
+Constructs a Q-learning agent with linear value approximation which can estimate future values, get estimated bets next action from current state,
+transition to new states and with accurate reward learn better weights for more accurately estimating future values.
+
+\textit{float Q()}\\
+Gets the Q value estimate of the current state using a weighted sum of features.
+
+\textit{float Q(action a)}\\
+Gets the Q value estimate of the state the action a takes the agent to.
+
+\textit{float maxQ()}\\
+Gets the Q value of the estimated best state from current state. 
+
+\textit{float maxQ(action a)}\\
+Gets the Q vaue of the estimated best state from the state the action a takes the agent to.
+
+\textit{action maxAction()}\\
+Gets the estimated best action from current state.
+
+\textit{action maxAction(action a)}\\
+Gets the estimated best action from the state the action a takes the agent to.
+
+\textit{void transition(float reward, std::vector$<$float$>$ action)}\\
+Transitions the agent from the current state to the state action a takes the agent to. The immediate reward from this next state must be passed.
+
+\textit{float fitnessFunction(std::vector$<$float$>$ genome) override}\\
+This class inherits a class for deciding the next action to take. This defines it's policy/behaviour. In this project the evolutionary strategy 
+is used to search for the next action, then using the Q-learning value estimate for deciding the best one to pick from.
+
+\textit{void updateWeights(float reward, action a)}\\
+Calculates the changes to the weights using the immediate reward from the state and estimated future values then updates the agent's weights accordingly.
+
+\section{Evolutionary Strategy}
+This API is an abstract class used to employ the basic evolutionary strategy algorithm in a class that inherits it. The fitness function must be defined
+in the inherited class for it to work. This will be done as the method of deciding the fitness of generated solutions is dependant on current situation.
+
+\begin{algorithm}
+\caption{Evolutionary Strategy with Comma Selection}
+\label{alg:escs}
+\begin{algorithmic}[1]
+\State $p \leftarrow$ Parent
+\State $b \leftarrow$ best child
+\For{each child}
+\State $c \leftarrow$ Current child
+\For{each gene of c}
+\State $g \leftarrow$ get corresponding gene from p
+\State $g \leftarrow$ Mutate(g)
+\EndFor
+\If {fitness(c) $>$ fitness(b)}
+\State $b \leftarrow c$
+\EndIf
+\EndFor
+\State $p \leftarrow b$
+\end{algorithmic}
+\end{algorithm}
+
+\noindent\underline{Variables}
+
+\textit{int numberOfChildren}\\
+Defines the number of children each new generation from a parent consists of. A higher number of children allows more diversity but requires longer to compute.
+
+\textit{float mutationRate}\\
+A value in the range of 0.0 - 1.0 which decides the chance for each gene if mutation occurs.
+
+\textit{int selection}\\
+Decides the type of selection operator used to decide the pool of solutions to pick the next parent from. 0 sets to comma selection and 1 for plus selection.
+
+\textit{std::vector$<$std::pair$<$genome, mutationDistribution$>>$ parent}\\
+The current parent, typically the best solution from last generation that survived. Inheriting class gets the parent's genome when it needs the current best solution.
+
+\noindent\underline{Functions}
+
+\textit{EvolutionaryStrategy(int numberOfGenes, int numberOfChildren, float mutationRate, float mutationDistribution)}\\
+Constructs evolutionary strategy method with specified passed parameters.
+
+\textit{float evolveParent()}\\
+Using the current parent, creates a generation of offspring with slight variation introduced. Then selection of best solution for new parent done 
+according to defined selection operator.
+
+\textit{virtual float fitnessFunction(std::vector$<$float$>$ genome) = 0}\\
+The declared fitness function. When the evolutionary strategy method is inherited for use in another class, this function must be defined according
+to the current situation that decides fitness.
+
+
+\section{Tile}
+This small API allows the quick creation of custom maze tiles in the form of arrays of vertices which can be rendered by OpenGL in the scene.
+By passing the desired walls identified by an enumerated type to the constructor the tile is formed as array of vertices and can then be easily loaded onto the GPU to be rendered.
+
+\noindent\underline{Variables}
+
+\textit{float vertices[180]}\\
+This is the static sized array which will hold the vertices to form the custom tile. 180 is the maximum vertices a tile with all panels would require to form.
+
+\noindent\underline{Functions}
+
+\textit{void Tile(int Walls)}\\
+The specified walls passed into this constructor populates the vertices array with correct values to form the desired tile.\\
+This dynamic approach to acquiring the vertices for each type of tile is more practical than storing each tile type uniquely which would require 
+16 different tile types to be stored as 4 optional walls has $2^4 = 16$ possibilities. Possibly if in the future this was to scale up to include the floor and ceiling for vertical movement
+through the maze, then it would need $2^6 = 64$ tiles stored.
+
+
+\section{Electrodermal Activity}
+This file is used as a wrapper for easily establishing a serial connection with a port and reading from it. It essentially abstracts the 
+boilerplate code away from the main program code for clarity and readability.
+
+\noindent\underline{Variables}
+
+\textit{SerialConnection sc}
+Structure which holds all the important data to be stored to establish and maintain an connection to a serial port.
+
+\noindent\underline{Functions}
+
+\textit{boolean setupSerial(char* port, SerialConnection* sc)}\\
+This is the entry function for establishing a serial connection with the specified port.
+Serial port naming varies between Operating system. In windows the port number is followed by "COM" and in linux "tty". The established 
+connection is then held in the filled SerialConnection object which must be referenced for the serial port interaction.
+
+\noindent\textit{void closeSerial(SerialConnection sc)}\\
+This function closes/frees the serial connection object, therefore can be thought of as physically freeing
+the port safely for other programs to then use.
+
+\noindent\textit{void printEA(SerialConnection sc)}\\
+Receives the buffered bytes from the serial port and prints them to the console. Used for debugging the serial ports output.
+
+\noindent\textit{char* getEA(SerialConnection sc)}\\
+Receives the buffered bytes from the serial port and returns them in a char/byte buffer for use in program.
+
+\section{Camera}
+This module is designed to show the scene from the camera's point of view. The camera object receives inputs of camera movement and Eular angles
+which are then calculated into a 4x4 matrix to be used as a view matrix, so to set the rendered OpenGL scene to the camera's point of view.\\
+The math is fairly complex behind this but well established. A detailed guide to programming the camera class can be found on LearnOpenGL.com by OpenGL2014Camera.
+
+\noindent\underline{General Camera:}
+
+\noindent\underline{Variables}
+
+\noindent\textit{glm::vec3 Position}\\
+\noindent\textit{glm::vec3 Front}\\
+\noindent\textit{glm::vec3 Up}\\
+\noindent\textit{glm::vec3 Right}\\
+\noindent\textit{glm::vec3 WorldUp}\\
+All these variables are used to define the camera position and direction it faces. Along with Eular angles this is all that is needed to calculate
+a 4x4 view matrix to move scene to point of view of the camera.
+
+\noindent\textit{float Yaw}\\
+\noindent\textit{float Pitch}\\
+The Eular angles for providing precise alterations to the view from the current direction of the camera.
+
+\noindent\underline{Functions}
+
+\noindent\textit{Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch)}\\
+Creates a camera object with a position and direction calculated from the passed parameters.
+
+\noindent\textit{void processKeyboard(int direction, float deltaTime)}\\
+Uses direction from passed parameter to change camera position appropriately.
+
+\noindent\textit{void processMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch)}\\
+Uses x and y values passed parameters to change camera angle appropriately. constrainPitch set to stop 
+pitch exceeding 90 degree angles which would flip the screen direction.
+
+\noindent\textit{void updateCameraVectors()}\\
+Using any newly acquired camera positioning and angle. Calculates and updates the rest of the camera values ready for view matrix retrieval.
+
+\section{Shader}
+This file is used mainly as a wrapper for compiling files into shaders, then creating shader programs which can be loaded onto the GPU for use at anytime.
+
+\noindent\underline{General Q-Shader:}
+
+\noindent\underline{Variables}
+
+\noindent\textit{unsigned int ID}\\
+Simply an ID allocated to each shader object to show in memory where the shader program is stored for use.
+
+\noindent\underline{Functions}
+
+\noindent\textit{Shader(const GLchar* vertexPath, const GLchar* fragmentPath)}\\
+Compiles both text files into shaders which are then used to create a shader program which is identified by the ID kept in the object.
+
+\noindent\textit{void use()}\\
+Loads the shader the function is called onto the GPU for use thenceforth.
+
+\noindent\textit{void updateMatrices(glm::mat4 modelMatrix, glm::mat4 viewMatrix, glm::mat4 projectionMatrix)}\\
+Updates the matrices on the shader program to passed parameters. This will be called every frame to update the scene appropriately.
+
+\section{Procedural Generating Shader}
+The procedural generation of texture will take place in the fragment shader, making this a implicit procedural method (See description \hyperlink{txt:im}{\textbf{Implicit methods}}).
+Therefore it will be written in GLSL, which is very similar to C syntax but extended for shader programming.
+
+\noindent\underline{General flow:}
+\begin{enumerate}
+	\item For each pixel:
+	\begin{itemize}
+		\item Calculate value for random noise.
+		\item Calculate value for all patterns.
+		\item Calculate the influence each pattern has on final texture.
+		\item Combine patterns together according to their influence.
+		\item Calculate degree of primary colours in pixel.
+		\item Set the final value for pixel colour.
+	\end{itemize}
+	\item Output collection of pixels as displayable image.
+\end{enumerate}
+
+\noindent\underline{Variables}
+
+\noindent\textit{in vec2 TexCoord}\\
+Input to this shader of the current texture coordinate. Passed from the previous stage in rendering pipeline.
+
+\noindent\textit{out vec4 colour}\\
+Output of this shader, a value for the colour of the current pixel being considered.
+
+\noindent\textit{uniform int tileID}\\
+The current tile being considered ID. This can be used in seeding randomness between different tiles.
+
+\noindent\textit{uniform float time}\\
+The time can be used to seed randomness to create real time variation inbetween frames to animate them.
+
+\noindent\underline{Functions}
+
+\noindent\textit{float mapToRange(float inputValue, float inputStart, float inputEnd, float outputStart, float outputEnd)}\\
+Used to map a value of one input range to its equivalent in another output range.\\
+An example of this would be mapping the 0-255 RGB representation to the 0.0-1.0 range.
+
+\noindent\textit{float snoise(vec2 v)}\\
+A pseudorandom gradient noise function known as Simplex noise. Takes two inputs and produces a random float from them for use in creating irregular patterns in the procedural pattern functions.
+
+\noindent\textit{float snoiseTurbulence(float x, float y, float initialSize)}\\
+Creates turbulence by combining a number of simplex noise calls according to initial size.
+
+Each of the simple pattern generating functions will ideally follow this format in the fragment shader:
+
+\vspace{0.5cm}
+
+\centerline{vec3 f(xCoord, yCoord, noise, ...)}
+
+\vspace{0.3cm}
+
+\noindent\textbf{xCoord \& yCoord} = Used to generate the initial pattern. Typically drawn from texture coordinates in range 0-1.\\
+\textbf{noise} = The noise value which must be previously generated which will be used to influence the randomness within the pattern.\\
+\textbf{...} = Any additional inputs that influence the pattern in some way. A common one is the scale of the pattern, for example how many squares on a checker board.
+
+This follows the conventional method of pattern generation functions which are self contained, allow input of noise to feed in randomness to the pattern and still provide control of certain aspects of the pattern.
+Simple patterns in the form of a function like this allows natural use of them in equations, allowing complex patterns to be easily formed through function combination or layering.
+
+
+\section{Additional Third Party API's}
+
+\textit{irrklang} (Audio Engine)\\
+Irrklang is a cross platform sound library. It is considered to provide high level abstraction and therefore is known as a sound engine.
+The audio engine provides quick audio functionality in a state based system. Sound engines can be created and then audio files loaded into them and 
+played through sequential functions or in dedicated thread controlled through setting the state of the engine in the main thread.
+
+A third party, high level sound engine was opted for in place of more complex/sophisticated low level API. This is because it would detract from the focus of the project
+to spend time on audio when a accessible sound engine can be used to quickly implement it.\\
+In the future if the project is taken further, a more complete audio module could be developed to incorporate the learning process in it as well.
+
+\chapter{Hardware Development}
+This chapter describes the development process for a device which meets the project  \hyperlink{txt:r2}{\textbf{requirement 2}}. This means it must be able to measure Electrodermal
+activity in a person and transmit this data to the system which the main program is running on.
+
+\section{Arduino}
+The Arduino IDE and designed micro-controller boards allow quick prototyping of devices which don't require any high level functionality or management
+like an embedded OS would provide. The requirement of the hardware in this project is comparatively simple. Arduino supports the interfaces and the
+small processing power needed to measure Electrodermal activity and send it to the system running the main program.
+
+\section{Electrodermal Activity Sensor Module}
+As described in the background concepts, basic Electrodermal activity can be measured 
+with the exosmatic DC method. By creating a small direct voltage circuit across the skin 
+with two electrodes, the current can be kept constant and the resistance measured.\\
+As it is a popular and reliable method, there are cheap and easily accessible Electrodermal activity sensor modules available.
+If setup correctly, the sensor module will output a relative resistance value which can be received by a system running the main program.
+
+Seeed Studio \citep{seeed2014sensor} produce one such module which is used in this project.
+
+The following table is the Grove sensor's specification:
+
+\begin{center}
+$Grove - GSR\_Sensor V1.2$\\
+\scalebox{1.0}{
+	\begin{tabular}{||m{5.0cm} | m{5.0cm}||} 
+		\hline
+		Parameter & Value/Range\\
+		\hline
+		Operating voltage & 3.3V/5V\\
+		\hline                                           
+		Sensitivity & Adjustable via a potentiometer\\
+		\hline                                           
+		Input Signal & Resistance, NOT Conductivity\\
+		\hline                                           
+		Output Signal & Voltage, analog reading\\
+		\hline                                           
+		Finger contact material & Nickel\\
+		\hline
+	\end{tabular}
+}
+\end{center}
+
+The documentation provided defines how the serial port reading must be processed to obtain the resistance:
+
+\centerline{Human Resistance($\Omega$) = $\frac{1024 + 2 * Serial_Port_Reading) * 10000}{512 - Serial_Port_Reading}$}
+
+\subsection{Calibration}
+
+Before the Grove sensor module can be used for resistance measurement, it needs calibration. The module must be physically adjusted in order to calibrate the 
+output of the sensor module for use in the resistance equation. The maximum output possible should not exceed 511, even though it is capable of up to 1023.
+
+The calibration process is conducted by first setting the sensor module up to read the raw signal output. Without the electrodes connected there will be no circuit
+and a maximum signal output under the current configuration. An adjustable resistor on the module can be manipulated with a screwdriver. Whilst observing the
+raw signal output, the resistor is adjusted until the reading is given at 512. Once this calibration is made, the electrodes can be attached and a suitable reading
+for the human resistance will be produced.
+
+\section{Embedded Program}
+
+Software must be flashed onto the microcontroller. During the setup stage, it first establishes a serial connection to a system over a USB port.\\
+During the main loop the microcontroller reads off the analogue pin which is connected to the output of the sensor module, therefore the resistance signal.
+The microcontroller takes the value then sends it over the established serial connection to the computer system.
+Additionally during each measurement interval, multiple readings are made and averaged. This is done to avoid an anomalous value being sent from the device.
+
+\subsection{Pseudo Code}
+\begin{algorithm}
+\label{alg:mea}
+\caption{Microcontroller Program: Measure Electrodermal Activity}
+\begin{algorithmic}[1]
+\State $averageEA \leftarrow 0$
+\State $sensorValue \leftarrow 0$
+\State $EA \leftarrow AnaloguePin0$
+\vspace{0.3cm}
+\Function{setup}{}
+\State $serial \leftarrow establishSerial$
+\EndFunction
+\vspace{0.3cm}
+\Function{loop}{}
+\State $sum \leftarrow 0$
+\For{0 to 10}
+	\State $sensorValue \leftarrow read(EA)$
+	\State $sum \leftarrow sum + sensorValue$
+	\State delay(5)
+\EndFor
+\State $averageEA = sum / 10$
+\State $serial.send(averageEA)$
+\EndFunction
+\State \Return
+\end{algorithmic}
+\end{algorithm}
+
+\chapter{Software Development}
+
+This chapter covers the the development process of the program. By following the design closely to produce all of the components in figure~\ref{fgr:umld}, then using them to
+form the whole program which meets all the requirements.
+
+The program will be produced over a planned three iterations. In each iteration certain requirements are met.
+
+\noindent \textbf{Iteration 1}: Aims to satisfy requirements 1 \& 2. A fully functioning and customizable 3D maze environment will be established as the foundation of the program.
+The Electrodermal activity recording module will be developed to provide the EDA functionality for the program. This iteration is to be completed by the work in progress day.
+
+\noindent \textbf{Iteration 2}: Aims to satisfy requirements 3 \& 4. The Q-Learning module is developed along with the evolutionary strategy which is inherited to be used as the policy by the Q-learning agent.
+
+\noindent \textbf{Iteration 3}: Aims to satisfy requirement 5 \& preparation for requirement 6. A procedural fragment shader should be created with modifiable features which 
+controls the final generated texture. Finally all the functionality should be brought together in preparation for the program's use in the user study.
+
+\section{Iteration 1}
+
+\subsection{3D Environment Development}
+
+The 3D maze environment will be rendered using the OpenGL API. The rendered scene will be controlled using conventional logical methods and algorithms used in 
+graphics programming.
+
+To begin, a basic program was created to render a static 3D object to a window. In creating this basic program, much of the fundamental structure and modules needed
+are establish for a 3D rendering program.\\
+In creating this, the typical program flow is constructed. First the setup stage is executed to prepare the OpenGL rendering pipeline. Shaders are created and loaded onto
+the GPU for detailed calculation of vertices and pixels. The way the vertex array objects are read by the GPU must also be defined. Additionally any other OpenGL options are set in this stage.\\
+Once the setup stage is completed, the program enters the rendering loop. This is where the world scene is drawn and rendered to the window. Any changes to the scene happen here
+and necessary adjustments made to the objects to translate their position in the world. By this point in this static program nothing much happens in this loop apart from loading the same vertices to the
+GPU and rendering them to the screen.\\
+The foundations for the 3D environment are created by this point. Much of the standard setup code is written, including the shader module for handling the creation of shader programs. Additionally the rendering loop
+is ready for future control of how the 3D environment changes between frames.
+
+\begin{figure}
+\centerline{\includegraphics[width=13.0cm]{OpenGL_Cube}}
+\caption[OpenGL Rendered Cube]{}
+\centerline{A 3D cube rendered in the window using OpenGL}
+\end{figure}
+
+The next part developed to realising the 3D environment is to create movement through the 3D world. This functionality is provided through the camera 
+module. The module handles keyboard and cursor input to mathematically compute the changes to be made to the world. These changes are made between each rendered
+frame resulting in perceived movement.\\
+Contrary to what is expected, rather than moving the camera view through the static world, the world of 3D objects are moved around the camera view. This 
+is done in such a way to give the illusion of camera movement through the world. The complex reasoning to this is described in the official OpenGL handbook 
+\citep{woo1999opengl}[ch 2].\\
+The camera module works by receiving movement inputs and then generating a view matrix from them. The view matrix is used to translate all the objects in the 
+environment according to the camera view.
+
+By this point objects can be drawn and rendered to the window along with first person movement through the scene. Manually drawing each object into the world is impractical.
+For the program the tile module is developed for constructing the maze environment. This module dynamically constructs the vertex arrays to represent the maze walls. These walls can
+then be translated to a position in the world and passed to the GPU to be rendered to the scene.
+
+\begin{figure}
+\centerline{\includegraphics[width=13.0cm]{Place_Tile}}
+\caption[Placing Generated Tiles]{}
+\centerline{Using the \hyperlink{txt:pt}{placeTile()} function to easily place tiles around the 3D environment}
+\end{figure}
+
+
+
+With convenient functions which can place these generated tiles in specified positions in the world (See function \hyperlink{txt:pt}{placeTile()}), it 
+becomes quick and easy to form mazes in the world.
+Only one more thing needs to be satisfied for a practical, explorable 3D environment and that is collision detection.\\
+Collision detection is separate logic from the rendering process. Essentially what needs to be done is that the camera view is restricted to remaining 
+inside the tiles. This is done in this program by taking the camera position and if the next inputs take the camera to a position outside the tile x or y 
+coordinates, that movement is not processed.
+
+The foundation of the program is completed. There is a 3D maze environment the user can move through with easy creation of new custom layouts for the maze by
+placing new tiles in the world. Other modules can be created and included in this program to add more functionality and through OpenGL there is still access
+to the graphical rendering mainly through the shader programs which is crucial to later adding procedural generating patterns to the maze walls.
+
+\begin{figure}
+\centerline{\includegraphics[width=13.0cm]{3D_Environment}}
+\caption[3D Environment]{}
+\centerline{The 3D environment with textured walls}
+\end{figure}
+
+\subsection{Electrodermal Activity Development}
+
+In this first iteration the Electrodermal activity recording was also to be covered as it would be good to demonstrate this functionality early for the demonstration
+day. The Electrodermal activity module was created, which was largely just a way of establishing a connection with a serial port on the computer using the win32 API provided
+then creating functions to easily read from the connected port and storing its contents in a buffer on the program to use. This is pretty much a wrapper class for the
+Win32 API serial port stuff to separate the boilerplate code from the main program. So in this way it is very generic but the specific type of serial connection
+establish is specific to the Electrodermal activity measuring device with Baudrate 9600, bytesize 8, Stopbit 1, and no parity.\\
+With this module created, with the Electrodermal activity measuring device connected to a serial port, the module could easily interact with the device and
+return measurements to the program to be used there.
+
+\section{Iteration 2}
+
+The design of the AI modules Evolutionary Strategy and Q-Learning took a more API standalone/independent design so that they can be taken and used in other applications which would
+like to incorporate their functionality. This was done as it made sense to provide modifiable parameters and abstract functions to quickly tweak how the process
+worked to find the setup for the best performance in this scenario.
+
+As according to the design, the evolutionary strategy API will be inherited by the Q-learning API as part of it's policy to decide the next best action. 
+For this reason the Evolutionary strategy will be created first and tested independently before creating the Q-Learning module, and using it with
+the evolutionary strategy employed as its policy.
+
+\subsection{Evolutionary Strategy Development}
+
+The evolutionary strategy is developed to provide control to the following parts:\\
+\begin{itemize}
+	\item The selection operator.
+	\item The number of genes.
+	\item The number of children in each parent's offspring.
+	\item Mutation rate, the probability the mutation operator executes on a gene.
+	\item Mutation distribution, the range the mutation can extend to.
+	\item The fitness function, requires override of pure virtual function.
+\end{itemize}
+
+The evolutionary strategy works by creating a copy of the current parent, this is called a child. The child has random changes made to it by visiting
+each float in the vector and applying the mutation operator with a probability decided by the mutation rate. The mutation operator then works by making a change to the float
+it executes on according to a Gaussian normal distribution \citep{gauss1809theoria} with a default mean 0 and standard deviation decided by the mutation distribution.
+The child is then checked against the best solution so far according to the fitness function, if it is considered better, the child becomes the new best solution. This process is repeated
+for each new child decided by the number of children set. Once all children have been generated and compared, the new parent is set to the best child generated.
+
+\begin{figure}
+\centerline{\includegraphics[width=13.0cm]{ES}}
+\caption[Evolutionary Strategy]{}
+\centerline{Visual explanation of Evolutionary strategy using the comma separation, therefore only considering children for new parent..}
+\end{figure}
+
+\subsection{Q-Learning Linear Approximation Development}
+
+The Q-Learning agent is developed to provide control to the following parts:
+\begin{itemize}
+	\item The number of features to represent the state.
+	\item The learning rate, the degree of influence new information has on weights.
+	\item The discount rate, the degree of influence the future estimated reward has on the weights.
+	\item The Q function used for the inherited evolutionary strategy fitness function.
+\end{itemize}
+
+The Q-Learning agent works by initially finding a new set of actions to take from the current state. This is done using it's policy, the evolutionary strategy. The fitness function of
+the evolutionary strategy is the Q value the agent generates using it's learned weights. To begin with all the weights are initialised to 0. Therefore the first action taken is purely
+random as the agent hasn't had any experience yet. The predicted "best" action is then taken and a reward observed from it. The reward is used to update the weights according
+to the Q-learning approximation equation. A positive reward will reinforce the weights of increased states and weaken decreased states. If the reward is negative, this works in the opposite 
+way. Ideally after making a few actions, the weights will be changed to prioritize which features are important and which are not. So when future best actions are estimated, it picks the better ones
+learnt from past experience.
+
+\section{Iteration 3}
+
+In this iteration the focus is on producing the procedural texture generation functionality to apply to the maze environment. This will be done in the fragment shader.
+
+The fragment shader is part of the shader program which is loaded onto the GPU. For that reason it is a separate program and has no direct access to the
+important data on the main program. However the shader will require data for a few things including the values for the texture features which will shape
+the generated procedural texture.\\
+To do this in the main program one of the shader module functions are used to load any required data onto the GPU for the shader program to access.
+
+\subsection{Pattern Functions}
+
+To process of developing procedural texture patterns is largely based around using various math functions which take two floating point numbers as inputs to generate 
+colour outputs for that point.\\
+Computer generated images are often constructed from geometric models. Composed of lines, curves, polygons. Mathematical functions
+can represent these geometric models in images. Provided there is a way to use the function from a 2-dimensional domain to
+colours. \citep{karczmarczuk2002functional}
+
+\centerline{A definition of this could be expressed as: $Image = Point \rightarrow Colour$ \quad \citep{Elliott03FOP}}
+
+\begin{figure}
+\centerline{\includegraphics[width=13.0cm]{Graphic_Sine}}
+\caption[Math Function Pattern: Sine]{}
+\label{fgr:mfps}
+\centerline{Using the periodic function sin to take the input of the y axis as the output for the pixel colour.}
+\end{figure}
+
+In figure~\ref{fgr:mfps} the sin function is used on an input of just the y coordinates. The y axis input is first converted into radians then applied through 
+the sine function and the output used to as the RGB values for the pixel. This results in this dark and light stripe pattern.
+The number of times the sin pattern repeats across the texture can be controlled by simply multiplying the input coordinates as it is a periodic function which 
+will then just repeat.\\
+Periodic functions are important as they allow recurrence within patterns, this allows the control of scale in the final generated texture. The most well
+used periodic functions are sin, cos and perhaps mod.
+
+Simple patterns like these can be combined to create more complex patterns. In this project to procedurally generate the complex texture pattern made up of the 
+texture features, the layering technique (See Section: ~\ref{section:ppg}) will be used.\\
+In the shader a collection of simple patterns will be generated. Then each pattern has it's influence calculated, this is how dominant that pattern is
+when it comes to layering it in the final texture. Each pattern is then layered one over the other according to their influence/strength to result in
+a new complex pattern.
+
+The following layering equation is used to calculate the new complex pattern from the simple patterns and their associated feature:
+
+\vspace{0.2cm}
+
+\centerline{$out = \frac{(p_0 * f_0) + ... + (p_n * f_n)}{n}$}
+\centerline{p = pattern [0.0 - 1.0]}
+\centerline{f = feature [0.0 - 1.0]}
+\centerline{n = Number of features}
+
+The following table describes the texture features the fragment shader will use:
+
+\begin{center}
+$Fragment Shader Features$\\
+\scalebox{1.0}{
+	\begin{tabular}{||m{3.0cm} | m{5.0cm}| m{5.0cm}||} 
+		\hline
+		Name & description & Notes\\
+		\hline
+		featureRed & Influences the degree of primary colour red in texture. & \\
+		\hline                                           
+		featureGreen & Influences the degree of primary colour green in texture. &\\
+		\hline                                           
+		featureBlue & Influences the degree of primary colour blue in texture. &\\
+		\hline
+		featureBrightness & Influences the level of brightness in the texture colours. & This is a boundary feature. It has no effect until it exceeds a value then is triggered.\\
+		\hline
+		featureAnimate & Influences the rate the texture animates in real time. & Only certain generated patterns support animation between frames.\\
+		\hline                                           
+		featureRing & Presence of a ring pattern in texture. & Supports animation.\\
+		\hline
+		featureHeart & Presence of a heart pattern in texture. &\\
+		\hline
+		featureMarble & Presence of a marble pattern in texture. &\\
+		\hline
+		featureVStripe & Presence of a vertical stripe pattern in texture. & Supports animation.\\
+		\hline
+		featureDiamond & Presence of a diamond pattern in texture. &\\
+		\hline
+		featureBrick & Presence of a brick pattern in texture. &\\
+		\hline
+		featureCheckerboard & Presence of a checkerboard pattern in texture. & Supports animation.\\
+		\hline
+		featureStar & Presence of a star pattern in texture. &\\
+		\hline
+		featureXor & Presence of a Xor pattern in texture. &\\
+		\hline
+	\end{tabular}
+}
+\end{center}
+
+\subsection{Bringing it all together}
+
+The Q-Learning agent needs to be employed in the program to have its contained vector of features represent the texture features which the fragment shader will use to 
+procedurally generate textures from. This is done by constructing the agent with a feature size equal to the number of texture features decided for the project.\\
+Then every texture update cycle, the agent chooses an estimated best action using the evolutionary strategy policy. The agent takes the action which results in a new set of features.
+All the new features are then uploaded to the GPU for use as texture features to decide a new generated texture.\\
+Then the program proceeds to use these generated textures until the next texture cycle. The Electrodermal activity is measured for change between the last texture cycle and the next one.
+This is then used as the reward signal, to determine the effectiveness of the new state the agent tried. The agent uses the reward to update its weights according to the Q-Learning
+value approximation algorithm (See Algorithm~\ref{alg:qlva}).\\
+The idea is that better states found by the agent generates a higher reward as a response from the user, and this reinforces weights of the texture features which
+might have created this increased response. Alternatively states found that don't create a response and even allow the user's EDA measurement to drop, will have a 
+negative reward which reduces the weights of the features which there might be no response from.
+
+
+\subsection{Electrodermal Activity Recording Suite}
+
+To gather meaningful information from the users during the experiment, the Electrodermal activity needs to be recorded before and while they use the program to
+observe if there is any change. Rather than just logging the data represented as text, a GUI was created which displays the Electrodermal reading from a selected
+serial port in real time.
+
+\begin{figure}
+\centerline{\fbox{\includegraphics[width=15.0cm]{EDA_Suite}}}
+\caption[Electrodermal Activity Suite]{}
+\centerline{JUCE framework used to create a GUI for plotting }
+\end{figure}
+
+The Electrodermal Activity Suite was created using the JUCE C++ framework. Using JUCE allows code to be written which can be compiled to run on the three major platforms.
+JUCE provides some GUI functionality which was used to develop a simple window which the user can interact with to select from any of the serial ports and begin
+plotting any Electrodermal Activity received through that serial port to a graph. The application also provides the functionality to pause and reset the recording 
+session, this is useful for as it gives more control during the experiment recording periods.
+
+\chapter{Testing}
+
+In this chapter the testing will be conducted on the complete program once all three iterations are 
+completed. Once testing is successful the requirements will have been met, excluding requirement 6
+as this requires the experimentation to be conducted first.
+Any flaws or weaknesses found should be noted and corrected when the system is looked over again 
+until no more bugs are present. This is important to fully cover before using the program for 
+experimentation.
+
+\section{Testing Strategy}
+
+\section{Test Cases}
+The Use cases in this section cover a few of the major functionalities of the system and display how
+the use cases were applied to the system to test it.\\
+The rest of the use cases can be found in the appendix.
+
+\begin{center}
+Test Case 1: Collision detection\\
+\scalebox{1.0}{
+	\begin{tabular}{||m{3.0cm} | m{9.0cm}||} 
+		\hline
+		ID & 1\\
+		\hline
+		Title & Collision detection\\
+		\hline
+		Pre-conditions & Generate environment with walls for all 4 cardinal directions\\
+		\hline
+		Test Steps & \begin{enumerate}\item Move camera position to pass North wall. \item Move camera position to pass East wall. \item Move camera position to pass South wall. \item Move camera position to pass West wall. \end{enumerate}\\
+		\hline
+		Expected Results & On reaching each wall, the camera is restricted to continue moving in that direction.\\
+		\hline
+		Result & \checkmark\\
+		\hline
+	\end{tabular}
+}
+\end{center}
+
+\begin{center}
+Test Case 3: Electrodermal activity measurement device\\
+\scalebox{1.0}{
+	\begin{tabular}{||m{3.0cm} | m{9.0cm}||} 
+		\hline
+		ID & 3\\
+		\hline
+		Title & Electrodermal activity measurement device\\
+		\hline
+		Pre-conditions & \begin{enumerate}\item Embedded program flashed onto device. \item Individual is wearing electrodes. \item Serial terminal setup to read from correct port. \end{enumerate}\\
+		\hline
+		Test Steps & \begin{enumerate}\item Observe initial measurements in serial terminal. \item Instruct individual to take a deep, prolonged breath. \item Observe new measurements. \end{enumerate}\\
+		\hline
+		Expected Results & Check readings are within an expected/reasonable range $[1000 - 100,000\Omega]$ \citep{fish2003medical}. Then observe at the time the individual takes a deep breath, the resistance drops notably as physiological reaction to taking a deep breath takes place.\\
+		\hline
+		Result & \checkmark\\
+		\hline
+	\end{tabular}
+}
+\end{center}
+
+\begin{center}
+Test Case 4: Procedural generation using pattern features\\
+\scalebox{1.0}{
+	\begin{tabular}{||m{3.0cm} | m{9.0cm}||} 
+		\hline
+		ID & 4\\
+		\hline
+		Title & Procedural generation using pattern features\\
+		\hline
+		Pre-conditions & Modify program for a debug mode where the texture features can be directly controlled with inputs from the user.\\
+		\hline
+		Test Steps & Make controlled changes to each pattern feature then observe the new generated texture.\\
+		\hline
+		Expected Results & Setting each pattern feature should show the expected pattern in generated texture.\\
+		\hline
+		Result & \checkmark\\
+		\hline
+	\end{tabular}
+}
+\end{center}
+
+\begin{center}
+Test Case 5: Procedural generation using colour features\\
+\scalebox{1.0}{
+	\begin{tabular}{||m{3.0cm} | m{9.0cm}||} 
+		\hline
+		ID & 5\\
+		\hline
+		Title & Procedural generation using colour features\\
+		\hline
+		Pre-conditions & Modify program for a debug mode where the texture features can be directly controlled with inputs from the user.\\
+		\hline
+		Test Steps & Make controlled changes to each colour feature then observe the new generated texture.\\
+		\hline
+		Expected Results & Setting each colour feature should show the expected colour change to the pattern in the generated texture.\\
+		\hline
+		Result & \checkmark\\
+		\hline
+	\end{tabular}
+}
+\end{center}
+
+\begin{center}
+Test Case 6: Procedural generation using animation feature\\
+\scalebox{1.0}{
+	\begin{tabular}{||m{3.0cm} | m{9.0cm}||}
+		\hline
+		ID & 6\\
+		\hline
+		Title & Procedural generation using animation feature\\
+		\hline
+		Pre-conditions & Modify program for a debug mode where the texture features can be directly controlled with inputs from the user.\\
+		\hline
+		Test Steps & Make controlled changes to the animation feature then observe the new generated texture.\\
+		\hline
+		Expected Results & Setting the animation feature should show the expected animation rate in the pattern to change in the generated texture.\\
+		\hline
+		Result & \checkmark\\
+		\hline
+	\end{tabular}
+}
+\end{center}
+
+\begin{center}
+Test Case 7: Establish serial connection\\
+\scalebox{1.0}{
+	\begin{tabular}{||m{3.0cm} | m{9.0cm}||}
+		\hline
+		ID & 7\\
+		\hline
+		Title & Establish serial connection\\
+		\hline
+		Pre-conditions & \begin{enumerate} \item Serial device connected to system port N. \item Port number N is passed as argument from command line. \end{enumerate}\\
+		\hline
+		Test Steps & Start the program and wait for setup phase to complete.\\
+		\hline
+		Expected Results & Debug information to console indicates successful established connection.\\
+		\hline
+		Result & \checkmark\\
+		\hline
+	\end{tabular}
+}
+\end{center}
+
+\begin{center}
+Test Case 8: Shader program creation\\
+\scalebox{1.0}{
+	\begin{tabular}{||m{3.0cm} | m{9.0cm}||}
+		\hline
+		ID & 8\\
+		\hline
+		Title & Shader program creation\\
+		\hline
+		Pre-conditions & \begin{enumerate} \item Source code for vertex shader written. \item Source code for fragment shader written. \end{enumerate}\\
+		\hline
+		Test Steps & Start the program and wait for setup phase to complete.\\
+		\hline
+		Expected Results & Debug information to console indicates successful creation of the shader program.\\
+		\hline
+		Result & \checkmark\\
+		\hline
+	\end{tabular}
+}
+\end{center}
+
+\begin{center}
+Test Case 9: Q-Learning agent learning\\
+\scalebox{1.0}{
+	\begin{tabular}{||m{3.0cm} | m{9.0cm}||}
+		\hline
+		ID & 9\\
+		\hline
+		Title & Q-Learning agent learning\\
+		\hline
+		Pre-conditions & \begin{enumerate} \item Source code for vertex shader written. \item Source code for fragment shader written. \end{enumerate}\\
+		\hline
+		Test Steps & Start the program and wait for setup phase to complete.\\
+		\hline
+		Expected Results & Debug information to console indicates successful creation of the shader program.\\
+		\hline
+		Result & \checkmark\\
+		\hline
+	\end{tabular}
+}
+\end{center}
+
+\begin{center}
+Test Case 10: Tile generation\\
+\scalebox{1.0}{
+	\begin{tabular}{||m{3.0cm} | m{9.0cm}||}
+		\hline
+		ID & 10\\
+		\hline
+		Title & Tile generation\\
+		\hline
+		Pre-conditions & \begin{enumerate} \item Generate each of the possible tiles equally spaced in the 3D environment. \item Set debug mode on for full freedom. \end{enumerate}\\
+		\hline
+		Test Steps & Visit each tile and check correctly generated.\\
+		\hline
+		Expected Results & Each of the rendered tiles has expected panels on it.\\
+		\hline
+		Result & \checkmark\\
+		\hline
+	\end{tabular}
+}
+\end{center}
+
+\section{Reinforcement Learning Example Test}
+It is very important that the Q-Learning agent is confirmed to be working correctly before being used in the main program.\\
+To confirm the ES and QL modules are working as expected they should be tested against a simple problem to see if they can solve them in a reasonable number of iterations.
+The test isn't aimed at measuring the performance of either of the modules but just that they are working as expected.
+This test is aimed at confirming the modules are functioning and work as expected since they are developed from scratch. This is not a test to measure performance of these different techniques.
+
+The Evolutionary Strategy module must be tested first to confirm it is functioning correctly before the Q-Learning module. This is because it is dependant on the Evolutionary Strategy
+as the policy for the Q-Learning agent.
+
+The example problem definition:\\
+The solution is represented by a vector of floats. The quality of the solution is equal to the sum of the even indexed items minus the sum of the odd indexed items.
+
+So ideally every iteration the even indexed floats would increase and the odd indexed floats would decrease. For testing against the example problem a quality/fitness
+of 25 must be achieved to be considered satisfactory.
+
+\begin{figure}
+\centerline{\includegraphics[width=13.0cm]{ES_Test_Begin}}
+\caption[Evolutionary Strategy Test: Console Output Start]{}
+\label{fgr:estcos}
+\centerline{The Evolutionary strategy solving a simple mathematical problem.}
+\end{figure}
+
+The Evolutionary strategy will use the following parameters to solve the example problem:\\
+Selection = Comma Selection\\
+numberOfGenes = 14\\
+numberOfChildren = 100\\
+mutationRate = 	0.1\\
+mutationDistribution = 0.1
+
+Observe in figure~\ref{fgr:estcos} to begin with the vector of numberOfGenes are default initialized between 0.0 and 1.0. The evolutionary strategy then follows the process to generate new solutions
+as described in the development stage. It creates offspring children of new solutions, calculates their fitness and then picks best for the parent of next generation. In this simple 
+example case the fitness function is accurately known so the fitness function is completely accurate and the best solution from the children is always correctly chosen. The parent 
+isn't considered as the comma selection is used.\\
+With 100 children it is statistically likely that for each new collection of children, one of them will increase the fitness further and will be set as the new parent.
+
+\begin{figure}
+\centerline{\includegraphics[width=13.0cm]{ES_Test_End}}
+\caption[Evolutionary Strategy Test: Console Output Finished]{}
+\label{fgr:estcof}
+\centerline{The Evolutionary strategy solving a simple mathematical problem.}
+\end{figure}
+
+This repeats every iteration, creating progressively better solutions until satisfying the test with a fitnesses of 25. This is only achieved so easily as the 
+quality/fitness function is known. If the problem was unknown then a way of estimating better solutions is needed. That is where Q-Learning becomes very useful,
+it can solve the problem without knowing the problem definition.
+
+\begin{figure}
+\centerline{\includegraphics[width=13.0cm]{QL_Test_Begin}}
+\caption[Q-learning Test: Console Output Start]{}
+\label{fgr:qltcos}
+\centerline{The Q-Learning agent solving a simple mathematical problem.}
+\end{figure}
+
+The Q-Learning agent will use the following parameters to solve the example problem:\\
+Selection = Comma Selection\\
+numberOfGenes = 14\\
+numberOfChildren = 100\\
+mutationRate = 	0.1\\
+mutationDistribution = 0.1\\
+(The same evolutionary strategy parameters used as in the standalone evolutionary strategy test.)
+
+numberOfFeatures = 14\\
+learningRate = 0.2\\
+discountRate = 0.7
+
+Observe in figure~\ref{fgr:qltcos} to begin with the vector of numberOfFeatures are default initialized to 0.0. The Q-Learning agent then follows the process to generate new, 
+better estimated solutions as described in development stage. It searches for a new best estimated action from its current state and makes a transition to that state. The agent then observes 
+the reward for the new state, then updates the weights using the learningRate, discountRate, reward and the action.
+
+As can be seen after the first action is taken, it doesn't by chance make the correct changes to closer satisfy the problem. Therefore it results in a negative fitness and the weights are adjusted accordingly.
+This continues to happen until through trial and error, the weights are adjusted to favour actions which increase even indexed items, and decrease odd indexed items.
+
+\begin{figure}
+\centerline{\includegraphics[width=13.0cm]{QL_Test_End}}
+\caption[Q-learning Test: Console Output Finished]{}
+\label{fgr:qltcof}
+\centerline{The Q-Learning agent solving a simple mathematical problem.}
+\end{figure}
+
+After this has been repeating for 53 iterations as seen in figure~\ref{fgr:qltcof}, the fitness is continually increase through correct actions determined 
+by a set of learned weights. This is done until the fitness of 25 is satisfied. Although this wasn't a test of performance it is notable from these runs that
+the Q-Learning agent completed the test in 53 iterations which surprisingly was faster than the 63 iterations for the evolutionary strategy considering Q-learning requires iterations of trial and error.\\
+This could be to chance and can't be confirmed until further performance testing was done.\\
+The main advantage to the Q-Learning approximation over the evolutionary strategy is
+that it doesn't require the problem definition, just a way of obtaining a reward through the actions, meaning it can estimate/guess the best action to take 
+from what it learns which the standalone evolutionary strategy cannot do without trying all the different actions which isn't practical sometimes.\\
+The emotional response of the individual which is used to try and learn the problem.
+
+\chapter{Experiment Strategy}
+
+The purpose of the experiment is to gather samples from volunteers of their mean natural EDA and their EDA whilst interacting with the PGTME program.
+These samples are collected in order to conduct a paired samples student t-test on the two sample sets to find if the PGTME program causes an increase in the physiological response in people as it is designed 
+to, or fails to do so.
+
+\section{Setup}
+
+It is important to immerse the user in the PGTME program to get the maximum emotional response possible through the procedurally generated textures and not 
+from any other interfering external stimuli. Therefore a number of conditions to achieve this will be set.
+
+Set of experiment conditions and environment:
+\begin{itemize}
+	\item Dimly lit room.
+	\item Volunteer advised full focus on the program from start until finish.
+	\item Quiet location.
+	\item Volunteer advised not to speak.
+	\item The electrodes will be securely fitted onto the index and middle finger, palm side.
+\end{itemize}
+If any of these conditions are breached and the experimenter decides this impacts the results, the experiment will be reset provided the volunteer still gives their verbal consents.\\
+
+The stored texture features and weights in the Q-learning agent will be reset for each individual. Alternatively the same agent could be reused between individuals 
+however instead a new agent is generated with no previous learning experience each time. This is done as each individual might have different features which
+create emotional response from them which need to be learned, so new agents are generated with no past experience to be completely tailored towards that individual. 
+
+\section{Sampling Method}
+The sampling method outlines how the two sets of samples will be obtained from the experiment. This involves the method of measurements, and then what calculations need to be 
+done to produce the final sample data items.
+
+\subsection{Measurement Strategy}
+
+During each sampling period, each individual will have a collection of Electrodermal activity measurements taken. The measurements will be taken in 10 second intervals
+and measured in resistance(ohm$\Omega$). Typically this should result in about 30 measurements being taken during both periods as each period should take 5 minutes to conduct.
+
+\centerline{$(5 * 60) / 10 = 30$}
+
+The measurements of 10 second intervals was chosen as it gives plenty of time for the emotional response from the external stimuli, increasing the SCR signal (See description \hyperlink{txt:scr}{\textbf{Skin Conductance Response}})
+
+The collection of measurements for each period will then be averaged, and the mean found. The two sample items will then be added to the first baseline sample 
+set and second stimulus sample set respectively. Once a sufficient sample size of 20 is collected, the student t test can be conducted.
+
+\subsection{Sample 1: Electrodermal Activity Baseline Period}
+
+The Electrodermal Activity baseline of each individual will be taken during a baseline period to find the natural physiological response of the individual before
+they are effected by any major external stimulus.\\
+In a natural baseline recording, no stimuli are presented. The individual should be comfortably seated in a relaxed position, with their eyes closed if they wish. 
+They should not be subject to the experiment at this point and given time to get used to the situation.\\
+An ideal baseline period should be at least 2-4 minutes and conducted at the beginning of the recording session. However since the baseline period will be used as a sample
+for the t test a baseline period of 5 minutes will be done as this matches about the average time it takes to navigate through the PGTME program during the stimulus period.
+Additionally a longer baseline period is beneficial as it gives time for the individual to get comfortable/relaxed for the experiment ahead.
+
+The natural baseline period will be conducted as follows:
+
+\begin{enumerate}
+	\item After the individual has been briefed on the test they will be seated.
+	\item The electrodes will be fitted to record Electrodermal Activity.
+	\item The individual will confirm once they are comfortable and feel relaxed.
+	\item The Electrodermal Activity will be recorded for a period of 5 minutes 0 seconds.
+\end{enumerate}
+Notes:
+\begin{itemize}
+	\item The individual is welcomed to suggest anything which will make them feel more relaxed and the tester will do his best to provide within the test guidelines.
+	\item The individual will be suggested to close their eyes if they wish to.
+	\item A longer baseline recording period of 5 minutes is used here to allow the individual to feel comfortable whilst being recorded as the problem here is that initially  
+	when recording the individual may feel nervous or anticipation for the test which will impact their natural state. Recording for longer so any initial response from nerves 
+	should subside and more accurate natural baseline recorded.
+\end{itemize}
+
+\subsection{Sample 2: Electrodermal Activity Stimulus Period}
+
+The Electrodermal Activity Stimulus Period will be conducted as follows:
+
+\begin{enumerate}
+	\item The individual remains seated after the baseline period has ended.
+	\item The system is prepared for recording the use of the main program for the stimulus period. This should be done quickly and without agitating the individual.
+	\item The individual is informed they must make their way through the maze to find the exit point, marked by white doors.
+	\item The individual is left to navigate their way through the maze by the experimenter.
+	\item Once the individual reaches the exit indicated by the white doors and finish sound effect. The experiment is concluded and data and graphs are stored in a sample folder.
+\end{enumerate}
+Notes:
+\begin{itemize}
+	\item If for whatever reason the individual cannot reach the exit after a reasonable 20 mins, the experiment will be cancelled.
+	\item It must be stressed, if the individual asks to leave at any time for whatever reason they are allowed to do so without any objections form the experimenter.
+	\item As the individual explores the maze, any unique events such as a comment from the individual should be recorded as a timestamped note.
+	\item The maze is expected to take approximately 5-6 minutes to navigate through.
+\end{itemize}
+
+\chapter{Experiment Analysis/Reflection?}
+The two sets of pre-test and post-test samples have been collected. Now they will undergo the student paired samples t-test to show if the physiological change in an individual
+between their natural state and when interacting with the PGTME has any merit.
+
+\section{Experiment Sample Results}
+
+\begin{center}
+Experiment Sample Results\\
+\scalebox{1.0}{
+	\begin{tabular}{||m{3.0cm} | m{9.0cm}||}
+		\hline
+		EDA Baseline Samples & EDA Stimulus Samples\\
+		\hline
+		95038 & 80463\\
+		\hline
+		77688 & 63144\\
+		\hline
+		63432 & 40461\\
+		\hline
+		41262 & 37923\\
+		\hline
+		444031 & 261289\\
+		\hline
+		55253 & 55829\\
+		\hline
+		87189 & 78332\\
+		\hline
+		193312 & 133720\\
+		\hline
+		158233 & 159224\\
+		\hline
+		76060 & 63662\\
+		\hline
+	\end{tabular}
+}
+\end{center}
+
+\section{Student T-Test}
+
+In this project the Student T-test will be used to test the hypothesis about the mean from the gathered samples drawn from the experiment. Essentially it is used
+to determine if the difference between two samples is due to chance or from some other factor.\\
+The student T-test is a well established method and was first covered by \citep{student1908probable} in his 1908 paper.
+
+Depending on the source of the samples gathered there are different types of T-tests that need to be conducted. For this experiment the two samples are obtained from 
+the same population of individuals. One sample from before (pre-test) and one after (post-test) the intervention. Therefore a paired samples t-test is used.\\
+This works as by comparing the same person between samples (Related groups). This increases the statistical power as there is no random variation from using different people between samples (Unrelated groups).
+
+The Student's T-test is used to compare two means to decide if they are different from one another.[???] In addition the t-test also informs how significant
+the differences are. The purpose of this comparison is to see if those differences happened by chance or from the changing variables between the two groups.
+
+The T-score is the ratio between the two sample sets. A T-Score of 3 would indicate the sets are three times as different from each other.\\
+The T-score has a P-value which is the probability the results from the sample data occurred by chance. P-values represent a chance between 0% to 100%
+and typically written as a decimal equivalent to the percentage. A low P-value indicates a more reliable result for the null hypothesis(?) with a P-value
+of 0.05(5%) being accepted as statistically sound.
+
+\subsection{Hypothesis}
+
+Procedurally Generated Texture Maze Environment(PGTME)
+
+The null hypothesis is that chance alone is responsible for the results. The idea is to disprove this, with results which are deemed reliable using a t-test.
+Even if a sample's mean disagrees with null hypothesis. It is not rejected in favour of Alternative Hypothesis until P-value worked out and smaller than significance level.
+
+Null hypothesis: There is no statistically significant difference between the mean natural Electrodermal activity of an individual to the mean Electrodermal activity from the same individual interacting with the PGTME program.\\
+Null hypothesis $H_0$: $\mu_1 - \mu_2 > d$
+
+Alternative hypothesis: There is a statistically significant difference between the mean natural Electrodermal activity of an individual to the mean Electrodermal activity from the same individual interacting with the PGTME program.\\
+Alternative hypothesis $H_1$: $\mu_1 - \mu2 < d$
+
+[Right now this is two-tailed, should be one-tailed???]
+
+\subsection{Analysis Plan}
+
+Significance level
+
+\subsection{Analyse Sample Data}
+
+Standard error. Compute the standard error (SE) of the sampling distribution.
+SE = sqrt[ (s1^2/n1) + (s2^2/n2) ]
+
+where s1 is the standard deviation of sample 1, s2 is the standard deviation of sample 2, n1 is the size of sample 1, and n2 is the size of sample 2.
+
+Degrees of freedom. The degrees of freedom (DF) is:
+DF = (s1^2/n1 + s2^2/n2)2 / { [ (s1^2 / n1)2 / (n1 - 1) ] + [ (s2^2 / n2)2 / (n2 - 1) ] }
+
+If DF does not compute to an integer, round it off to the nearest whole number. Some texts suggest that the degrees of freedom can be approximated by the smaller of n1 - 1 and n2 - 1; but the above formula gives better results.
+
+Test statistic. The test statistic is a t statistic (t) defined by the following equation.
+t = [ (x1 - x2) - d ] / SE
+
+where x1 is the mean of sample 1, x2 is the mean of sample 2, d is the hypothesized difference between population means, and SE is the standard error.
+
+P-value. The P-value is the probability of observing a sample statistic as extreme as the test statistic. Since the test statistic is a t statistic, use the t Distribution Calculator to assess the probability associated with the t statistic, having the degrees of freedom computed above. (See sample problems at the end of this lesson for examples of how this is done.)
+
+
+\begin{figure}
+\centerline{\includegraphics[width=13.0cm]{T_Table}}
+\caption[T-Table for critical value]{}
+\label{fgr:tt}
+\centerline{T-Table used to find critical value for the tested significance level.}
+\end{figure}
+\cite{T2014Table}
+
+\chapter{Conclusion}
+
+(the main issue with a small sample size is low statistical power.)
+
+(I only measured change in whole EDA signal. The SCL signal is irrelevant but was still taking part in the learning process and the samples taken. It would be ideal to
+record only the SCR signal which measures emotional response. This would require further calculation and filtering out the SCL signal. By further developing the EDA module.)
+
+(Could discuss ANN depending on if I implement one.)
+(I will want to discuss later this as a possible option or future advancement of this project. It would involve replacing Q function from say a weighted
+ linear sum to using a neural network. And to train weights use backpropagation with reference to the reward.)
+
+\begin{appendices}
+\chapter{Complete Test Cases}
+\end{appendices}
+
+\printglossaries
+
+\bibliographystyle{agsm}
+\bibliography{FirstDraftReport}
+
+\end{document}

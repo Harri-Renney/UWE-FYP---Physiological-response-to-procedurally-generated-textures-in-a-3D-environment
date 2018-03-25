@@ -26,7 +26,7 @@
 #include "EA.h"
 
 //RL Lib
-#include "RL.h"
+#include "QLearning.h"
 
 //Texture Lib
 #define STB_IMAGE_IMPLEMENTATION	//Required for stb.
@@ -56,7 +56,7 @@ float deltaTime = 1.0f;
 float yaw = 0, pitch = 0, fov = 90;
 
 //RL//
-QLearningApprox rl(4, 0.2, 0.7);
+QLearning::QLearningApproxLinear ql(14, 0.2, 0.7, 10, 0.7, 0.07);
 
 //Misc Variables//
 bool firstMouseMovement = true;
@@ -64,6 +64,9 @@ float mixRate = 0;
 float control = 0;
 int success = true;
 clock_t countDown;
+int cycle = 0;
+int lastEA = 0;
+int currentEA = 0;;
 
 //Window + Context//
 GLFWwindow* windowInit();
@@ -93,9 +96,14 @@ int main(int argc, char* argv[])
 	SerialConnection sc;
 	char str[20];
 	sprintf(str, "\\\\.\\COM%s", argv[1]);
-	//if (!setupSerial(str, &sc))
-	//	return -1;
+	if (!setupSerial(str, &sc))
+	{
+		//return -1;
+	}
 	/////////////////////////////////////////////////////
+
+	ql.setMax(1.0);
+	ql.setMin(0.0);
 
 	//Initalize window.
 	GLFWwindow* window = windowInit();
@@ -146,29 +154,59 @@ int main(int argc, char* argv[])
 	//unsigned int texture2 = generate2DTexture("textures/creepy_texture.jpg");
 
 	//Create + compile vertex shader.
-	Shader shaderProgram("shaders/vsOriginal.txt", "shaders/fsMathFunctions.txt");
-	shaderProgram.use();	//Finding uniform location not require shader to be running but updating its value does.
+	Shader shaderProgram("shaders/vsOriginal.txt", "shaders/fsProceduralRL.txt");
+	if (!shaderProgram.use())	//Finding uniform location not require shader to be running but updating its value does.
+	{
+		std::cout << "Error: Failed to create shader program" << std::endl;
+		//return -1;
+	}
+	else
+		std::cout << "Succesful: Shader program created" << std::endl;
 	////////////////////////////////
 
-	Shader shaderProgram2("shaders/vsOriginal.txt", "shaders/fsProcedural.txt");
+	Shader shaderProgram2("shaders/vsOriginal.txt", "shaders/fsOriginal.txt");
 
 	Shader shaderProgram3("shaders/vsOriginal.txt", "shaders/fsProceduralTime.txt");
 
 	Shader shaderProgram4("shaders/vsOriginal.txt", "shaders/fsProceduralTimeFast.txt");
 
-	//unsigned int texture1 = generateBrickTexture(1920, 1080);
-	unsigned int texture1 = generateTurbulence(128, 128);
+	unsigned int texture1 = generateBrickTexture(1920, 1080);
+	//unsigned int texture1 = generateTurbulence(128, 128);
 	//unsigned int texture1 = generateLatticeNoise(200, 200);
 	//unsigned int texture2 = generateBrickTexture(200, 200);
 	//unsigned int texture3 = generateCloudTexture(200, 200);
 	//shaderProgram.setInt("ourTexture01", 0);
 	//shaderProgram.setInt("ourTexture02", 1);
 
+	//////////////////////
+	// For Door texture //
+	//////////////////////
+	unsigned int textureDoor;
+	unsigned int textureFace;
+	glGenTextures(1, &textureDoor);
+	glGenTextures(1, &textureFace);
+	glBindTexture(GL_TEXTURE_2D, textureDoor);
+	// load and generate the texture
+	int width, height, nrChannels;
+	unsigned char *data = stbi_load("textures/door.jpg", &width, &height, &nrChannels, 0);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+	glGenerateMipmap(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, textureFace);
+	data = stbi_load("textures/af.jpg", &width, &height, &nrChannels, 0);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+	glGenerateMipmap(GL_TEXTURE_2D);
+	stbi_image_free(data);
+	shaderProgram2.setInt("ourTexture01", 0);
+	////////////////////////////////////////
+
 	//A random value for shaders if needed.
 	float r = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
 	shaderProgram.setFloat("randomPassed", r);
 
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+	char* stringEA = getEA(sc);
+	lastEA = stringToInt(stringEA);
 
 	//The render loop.
 	while (!glfwWindowShouldClose(window))
@@ -183,6 +221,11 @@ int main(int argc, char* argv[])
 
 		if((camera.Position.z >= -30.6 && camera.Position.z <= -30.5) && (camera.Position.x >= 3.0 && camera.Position.x <= 4.0))
 			SoundEngine->play2D("a.wav", GL_FALSE);
+		if ((camera.Position.z >= -30.5 && camera.Position.z <= -29.5) && (camera.Position.x >= 2.5 && camera.Position.x <= 2.6))
+		{
+			SoundEngine->play2D("cheer.wav", GL_FALSE);
+			camera.Position = glm::vec3(0.0, 0.0, 0.0);
+		}
 
 		//Transformations//
 		glm::mat4 modelMatrix;
@@ -205,7 +248,8 @@ int main(int argc, char* argv[])
 		glClearColor(0.2f, 0.3f, 0.3f, 0.0f);	//A state setting function.
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);			//A state using function. ^^
 
-		//shaderProgram.setFloat("time", glfwGetTime());
+		double tt = glfwGetTime();
+		shaderProgram.setFloat("time", tt);
 
 		//float noisy = vnoise(100.0, 789.0, 138.0);
 		//printf("%f\n", noisy);
@@ -340,10 +384,93 @@ int main(int argc, char* argv[])
 		placeTile(t, glm::vec3(-1.0, 0.0, 0.0), 1, &modelMatrix, VBO, shaderProgram, texture1, texture1, texture1);
 
 		t = Tile(EAST | WEST);
-		placeTile(t, glm::vec3(0.0, 0.0, -1.0), 200, &modelMatrix, VBO, shaderProgram, texture1, texture1, texture1);
+		placeTile(t, glm::vec3(0.0, 0.0, -1.0), 4, &modelMatrix, VBO, shaderProgram, texture1, texture1, texture1);
 
-		t = Tile(SOUTH | EAST | WEST);
+		t = Tile(SOUTH);
 		placeTile(t, glm::vec3(0.0, 0.0, -1.0), 1, &modelMatrix, VBO, shaderProgram, texture1, texture1, texture1);
+
+		t = Tile(NORTH | SOUTH);
+		placeTile(t, glm::vec3(1.0, 0.0, 0.0), 2, &modelMatrix, VBO, shaderProgram, texture1, texture1, texture1);
+
+		t = Tile(SOUTH | EAST);
+		placeTile(t, glm::vec3(1.0, 0.0, 0.0), 1, &modelMatrix, VBO, shaderProgram, texture1, texture1, texture1);
+
+		t = Tile(EAST | WEST);
+		placeTile(t, glm::vec3(0.0, 0.0, 1.0), 1, &modelMatrix, VBO, shaderProgram, texture1, texture1, texture1);
+
+		t = Tile(EAST | NORTH);
+		placeTile(t, glm::vec3(0.0, 0.0, 1.0), 1, &modelMatrix, VBO, shaderProgram, texture1, texture1, texture1);
+
+		t = Tile(NORTH | WEST | SOUTH);
+		placeTile(t, glm::vec3(-1.0, 0.0, 0.0), 1, &modelMatrix, VBO, shaderProgram, texture1, texture1, texture1);
+
+		modelMatrix = glm::translate(modelMatrix, glm::vec3(-2.0f, 0.0f, -2.0f));
+		//For movements outside placeTile function need this.
+		currentPosition += glm::vec2(glm::vec3(-2.0f, 0.0f, -2.0f).x, glm::vec3(-2.0f, 0.0f, -2.0f).z);
+		world.grid[tileCounter].position = currentPosition;
+
+		t = Tile(NORTH | SOUTH);
+		placeTile(t, glm::vec3(-1.0, 0.0, 0.0), 2, &modelMatrix, VBO, shaderProgram, texture1, texture1, texture1);
+
+		t = Tile(WEST | SOUTH);
+		placeTile(t, glm::vec3(-1.0, 0.0, 0.0), 1, &modelMatrix, VBO, shaderProgram, texture1, texture1, texture1);
+
+		t = Tile(EAST | WEST);
+		placeTile(t, glm::vec3(0.0, 0.0, 1.0), 8, &modelMatrix, VBO, shaderProgram, texture1, texture1, texture1);
+
+		t = Tile(NORTH | EAST);
+		placeTile(t, glm::vec3(0.0, 0.0, 1.0), 1, &modelMatrix, VBO, shaderProgram, texture1, texture1, texture1);
+
+		t = Tile(NORTH | SOUTH);
+		placeTile(t, glm::vec3(-1.0, 0.0, 0.0), 4, &modelMatrix, VBO, shaderProgram, texture1, texture1, texture1);
+
+		t = Tile();
+		placeTile(t, glm::vec3(-1.0, 0.0, 0.0), 1, &modelMatrix, VBO, shaderProgram, texture1, texture1, texture1);
+
+		t = Tile(EAST | WEST);
+		placeTile(t, glm::vec3(0.0, 0.0, 1.0), 2, &modelMatrix, VBO, shaderProgram, texture1, texture1, texture1);
+
+		t = Tile(NORTH | EAST);
+		placeTile(t, glm::vec3(0.0, 0.0, 1.0), 1, &modelMatrix, VBO, shaderProgram, texture1, texture1, texture1);
+
+		t = Tile(NORTH | SOUTH | WEST);
+		placeTile(t, glm::vec3(-1.0, 0.0, 0.0), 1, &modelMatrix, VBO, shaderProgram, texture1, texture1, texture1);
+
+		modelMatrix = glm::translate(modelMatrix, glm::vec3(1.0f, 0.0f, -3.0f));
+		//For movements outside placeTile function need this.
+		currentPosition += glm::vec2(glm::vec3(1.0f, 0.0f, -3.0f).x, glm::vec3(1.0f, 0.0f, -3.0f).z);
+		world.grid[tileCounter].position = currentPosition;
+
+		t = Tile(NORTH | SOUTH);
+		placeTile(t, glm::vec3(-1.0, 0.0, 0.0), 15, &modelMatrix, VBO, shaderProgram, texture1, texture1, texture1);
+
+		t = Tile(WEST | SOUTH);
+		placeTile(t, glm::vec3(-1.0, 0.0, 0.0), 1, &modelMatrix, VBO, shaderProgram, texture1, texture1, texture1);
+
+		t = Tile(NORTH | EAST | WEST);
+		placeTile(t, glm::vec3(0.0, 0.0, 1.0), 1, &modelMatrix, VBO, shaderProgram, texture1, texture1, texture1);
+
+		modelMatrix = glm::translate(modelMatrix, glm::vec3(16.0f, 0.0f, -1.0f));
+		//For movements outside placeTile function need this.
+		currentPosition += glm::vec2(glm::vec3(16.0f, 0.0f, -1.0f).x, glm::vec3(16.0f, 0.0f, -1.0f).z);
+		world.grid[tileCounter].position = currentPosition;
+
+		t = Tile(EAST | WEST);
+		placeTile(t, glm::vec3(0.0, 0.0, -1.0), 12, &modelMatrix, VBO, shaderProgram, texture1, texture1, texture1);
+
+		t = Tile(WEST | SOUTH);
+		placeTile(t, glm::vec3(0.0, 0.0, -1.0), 1, &modelMatrix, VBO, shaderProgram, texture1, texture1, texture1);
+
+		t = Tile(NORTH | SOUTH);
+		placeTile(t, glm::vec3(1.0, 0.0, 0.0), 7, &modelMatrix, VBO, shaderProgram, texture1, texture1, texture1);
+
+		t = Tile(NORTH | SOUTH | EAST);
+		placeTile(t, glm::vec3(1.0, 0.0, 0.0), 1, &modelMatrix, VBO, shaderProgram2, textureFace, textureDoor, textureFace);
+		t = Tile(NORTH | SOUTH);
+		placeTile(t, glm::vec3(1.0, 0.0, 0.0), 1, &modelMatrix, VBO, shaderProgram, texture1, texture1, texture1);
+
+		/*t = Tile(SOUTH | EAST | WEST);shaderProgram2, textureFace, textureDoor, textureFace
+		placeTile(t, glm::vec3(0.0, 0.0, -1.0), 1, &modelMatrix, VBO, shaderProgram, texture1, texture1, texture1);*/
 		////////////////////
 
 		//Check call back events then swap buffers.
@@ -356,27 +483,65 @@ int main(int argc, char* argv[])
 		if (renderFrame < TIME_PER_FRAME_MICRO_SECONDS)
 			Sleep(TIME_PER_FRAME_MICRO_SECONDS - renderFrame);
 
-		//countDown += renderFrame;
-		//if (countDown > 5 * CLOCKS_PER_SEC)
-		//{
-		//	std::vector<float> action;
-		//	rl.maxQFunction(action);
-		//	float reward = action[3] - action[1];
-		//	rl.transitionNewState(reward, action);
-		//	//texture1 = generateLatticeNoise(200 + (rand() % 20), 200);
-		//	//texture1 = generateCloudTexture(200 + (rand() % 20), 200);
-		//	shaderProgram.setFloat("featureOne", action[0]);
-		//	shaderProgram.setFloat("featureTwo", action[1]);
-		//	shaderProgram.setFloat("featureThree", action[2]);
-		//	shaderProgram.setFloat("featureFour", action[3]);
-		//	countDown = 0;
-		//}
+		countDown += renderFrame;
+		if (countDown > 10 * CLOCKS_PER_SEC)
+		{
+			char* stringEA = getEA(sc);
+			currentEA = stringToInt(stringEA);
 
-		//printGSR(sc);
+			std::vector<float> nextAction;
+			nextAction = ql.maxAction();
+			float reward = currentEA - lastEA;
+			reward = -reward;
+			//float reward = nextAction[3]*2;
+			//float reward = ql.getFeatures()[9]*100;
+			ql.transition(reward, nextAction);
+
+			printf("Cycle: %d\n\n", cycle++);
+			shaderProgram.setFloat("featureRed", ql.getFeatures()[0]*1);
+			printf("Red:          Strength = %f Weight = %f\n", ql.getFeatures()[0], ql.getWeights()[0]);
+			shaderProgram.setFloat("featureGreen", ql.getFeatures()[1]*1);
+			printf("Green:        Strength = %f Weight = %f\n", ql.getFeatures()[1], ql.getWeights()[1]);
+			shaderProgram.setFloat("featureBlue", ql.getFeatures()[2]*1);
+			printf("Blue:         Strength = %f Weight = %f\n", ql.getFeatures()[2], ql.getWeights()[2]);
+			shaderProgram.setFloat("featureAnimate", ql.getFeatures()[3]);
+			printf("Animate:      Strength = %f Weight = %f\n", ql.getFeatures()[3], ql.getWeights()[3]);
+			shaderProgram.setFloat("featureRing", ql.getFeatures()[4]);
+			printf("Ring:         Strength = %f Weight = %f\n", ql.getFeatures()[4], ql.getWeights()[4]);
+			shaderProgram.setFloat("featureHeart", ql.getFeatures()[5]);
+			printf("Heart:        Strength = %f Weight = %f\n", ql.getFeatures()[5], ql.getWeights()[5]);
+			shaderProgram.setFloat("featureMarble", ql.getFeatures()[6]);
+			printf("Marble:       Strength = %f Weight = %f\n", ql.getFeatures()[6], ql.getWeights()[6]);
+			shaderProgram.setFloat("featureVStripe", ql.getFeatures()[7]);
+			printf("VStripe:      Strength = %f Weight = %f\n", ql.getFeatures()[7], ql.getWeights()[7]);
+			shaderProgram.setFloat("featureDiamond", ql.getFeatures()[8]);
+			printf("Diamond:      Strength = %f Weight = %f\n", ql.getFeatures()[8], ql.getWeights()[8]);
+			shaderProgram.setFloat("featureBrick", ql.getFeatures()[9]);
+			printf("Brick:        Strength = %f Weight = %f\n", ql.getFeatures()[9], ql.getWeights()[9]);
+			shaderProgram.setFloat("featureCheckerboard", ql.getFeatures()[10]);
+			printf("CheckerBoard: Strength = %f Weight = %f\n", ql.getFeatures()[10], ql.getWeights()[10]);
+			shaderProgram.setFloat("featureStar", ql.getFeatures()[11]);
+			printf("Star:         Strength = %f Weight = %f\n", ql.getFeatures()[11], ql.getWeights()[11]);
+			shaderProgram.setFloat("featureXor", ql.getFeatures()[12]);
+			printf("Xor:          Strength = %f Weight = %f\n\n", ql.getFeatures()[12], ql.getWeights()[12]);
+			if (ql.getFeatures()[13] > 0.9)
+			{
+				shaderProgram.setFloat("featureBrightness", 3.0);
+				printf("Brightness:          Strength = %f Weight = %f\n\n", ql.getFeatures()[13], ql.getWeights()[13]);
+			}
+			else
+			{
+				shaderProgram.setFloat("featureBrightness", 1.0);
+				printf("Brightness:          Strength = %f Weight = %f\n\n", ql.getFeatures()[13], ql.getWeights()[13]);
+			}
+
+			printf("Reward for this cycle: %f\n\n", reward);
+			countDown = 0;
+			lastEA = currentEA;
+		}
 	}
 
 	//closeSerial(sc);
-	//shaderProgram.setFloat("mixRate", mixRate);
 
 	//Clearup.
 	glfwTerminate();
@@ -578,4 +743,8 @@ void drawPanel(Tile tile, unsigned int texture, int vertice)
 	glBufferData(GL_ARRAY_BUFFER, sizeof(panel), panel, GL_STATIC_DRAW);
 	glBindTexture(GL_TEXTURE_2D, texture);	//Bind the exisiting textures to be used when next drawn. (A state)
 	glDrawArrays(GL_TRIANGLES, 0, sizeof(panel) / sizeof(float) / 5);
+}
+
+void learnFeatures()
+{
 }
