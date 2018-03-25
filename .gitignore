@@ -1,3 +1,16 @@
+*.toc
+*.pdf
+*.out
+*.log
+*.lof
+*.loa
+*.ist
+*.gls
+*.glo
+*.glg
+*.blg
+*.bbl
+*.aux
 *.wav
 *.png
 *.jpg
